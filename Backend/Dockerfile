@@ -10,7 +10,7 @@ COPY src src
 RUN mvn -B -ntp package -DskipTests
 
 # ---------- Etape 2 : image d'execution (JRE seul) ----------
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 LABEL org.opencontainers.image.title="antigone-backend" \
       org.opencontainers.image.description="Antigone 360 - API Spring Boot"
 WORKDIR /app
