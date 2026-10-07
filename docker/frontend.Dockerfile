@@ -17,7 +17,7 @@
 # toute la configuration de l'image passe par ces arguments.
 
 # ---------- Etape 1 : build ----------
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 ARG APP
 ARG VITE_API_URL=""
 ARG VITE_PROJECTS_APP_URL="http://localhost:3000"
