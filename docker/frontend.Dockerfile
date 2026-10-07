@@ -6,14 +6,26 @@
 #
 #   docker build -f docker/frontend.Dockerfile --build-arg APP=rh -t antigone-rh/frontend-rh .
 #
-# APP           : rh | finance | projects
-# VITE_API_URL  : URL du backend injectee au build (vide = auto-detection :
-#                 http://localhost:8080 quand l'app est servie sur localhost).
+# APP                    : rh | finance | projects
+# VITE_API_URL           : URL du backend injectee au build (vide = auto-detection :
+#                          http://localhost:8080 quand l'app est servie sur localhost).
+# VITE_*_APP_URL         : URLs des trois apps, pour la connexion (portee par l'app
+#                          Projets) et le bouton de bascule entre apps. Par defaut,
+#                          les ports publies par docker-compose.yml.
+# VITE_POWERBI_*_URL     : liens d'integration Power BI (optionnels).
+# Les fichiers .env.production des apps ne sont PAS copies (cf. .dockerignore) :
+# toute la configuration de l'image passe par ces arguments.
 
 # ---------- Etape 1 : build ----------
 FROM node:22-alpine AS build
 ARG APP
 ARG VITE_API_URL=""
+ARG VITE_PROJECTS_APP_URL="http://localhost:3000"
+ARG VITE_RH_APP_URL="http://localhost:3001"
+ARG VITE_FINANCE_APP_URL="http://localhost:3002"
+ARG VITE_POWERBI_PRESENCE_URL=""
+ARG VITE_POWERBI_FINANCE_URL=""
+ARG VITE_POWERBI_PROJETS_URL=""
 RUN test -n "$APP" || (echo "Build-arg APP obligatoire (rh|finance|projects)" && false)
 WORKDIR /repo
 
@@ -28,7 +40,13 @@ RUN npm ci --no-audit --no-fund
 COPY packages packages
 COPY frontend-${APP} frontend-${APP}
 ENV VITE_API_URL=${VITE_API_URL} \
-    VITE_APP_KIND=${APP}
+    VITE_APP_KIND=${APP} \
+    VITE_PROJECTS_APP_URL=${VITE_PROJECTS_APP_URL} \
+    VITE_RH_APP_URL=${VITE_RH_APP_URL} \
+    VITE_FINANCE_APP_URL=${VITE_FINANCE_APP_URL} \
+    VITE_POWERBI_PRESENCE_URL=${VITE_POWERBI_PRESENCE_URL} \
+    VITE_POWERBI_FINANCE_URL=${VITE_POWERBI_FINANCE_URL} \
+    VITE_POWERBI_PROJETS_URL=${VITE_POWERBI_PROJETS_URL}
 RUN npm run build -w frontend-${APP}
 
 # ---------- Etape 2 : service statique ----------

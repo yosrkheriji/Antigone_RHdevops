@@ -62,7 +62,11 @@ services:
     image: ${IMAGE_PREFIX:-antigone}/frontend-rh:${IMAGE_TAG:-local}
     build:
       <<: *frontend-build
-      args: { APP: rh }
+      args:
+        APP: rh
+        VITE_POWERBI_PRESENCE_URL: ${VITE_POWERBI_PRESENCE_URL:-}
+        VITE_POWERBI_FINANCE_URL: ${VITE_POWERBI_FINANCE_URL:-}
+        VITE_POWERBI_PROJETS_URL: ${VITE_POWERBI_PROJETS_URL:-}
     restart: unless-stopped
     depends_on: [backend]
     ports:
