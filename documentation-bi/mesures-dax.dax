@@ -1,0 +1,135 @@
+// ============================================================================
+// Mesures DAX — entrepot decisionnel Antigone
+//
+// A coller dans Power BI Desktop :
+//   1. Barre de gauche : icone « DAX » (Vue Requete DAX)
+//   2. Coller TOUT ce fichier dans une requete vide
+//   3. Cliquer sur « Mettre a jour le modele avec les modifications »
+//      (bouton en haut de la vue, ou lien « Update model » au-dessus de DEFINE)
+//
+// PREREQUIS
+//   - Les 10 tables sont renommees sans le prefixe « dwh » (fait_presence, ...)
+//   - La table _Mesures existe
+//   - dim_date est marquee comme table de dates
+//
+// Les 7 mesures de presence deja creees a la main ne sont PAS reprises ici.
+// Ce script ajoute : conges/inactivite, finance, projets.
+// ============================================================================
+
+DEFINE
+    // ── Presence : complements ──────────────────────────────────────────────
+    MEASURE _Mesures[Jours de conge] =
+        CALCULATE ( SUM ( fait_conge[nombre_jours] ), fait_conge[est_approuve] = 1 )
+
+    MEASURE _Mesures[Demandes de conge] =
+        CALCULATE ( COUNTROWS ( fait_conge ), fait_conge[est_approuve] = 1 )
+
+    MEASURE _Mesures[Inactivite excedentaire (h)] =
+        DIVIDE ( SUM ( fait_inactivite[inactivite_excedentaire] ), 60 )
+
+    MEASURE _Mesures[Deduction inactivite] =
+        SUM ( fait_inactivite[montant_deduction] )
+
+    // ── Finance ─────────────────────────────────────────────────────────────
+    // fait_finance contient DEUX lectures du meme flux (colonne `base`) :
+    // ENGAGEMENT (comptable) et TRESORERIE (encaisse/decaisse). Sommer sans
+    // filtrer `base` compterait deux fois le meme dinar : toutes les mesures
+    // ci-dessous la filtrent explicitement.
+    MEASURE _Mesures[Produits HT] =
+        CALCULATE (
+            SUM ( fait_finance[montant_ht] ),
+            fait_finance[base] = "ENGAGEMENT",
+            fait_finance[sens] = "ENTREE"
+        )
+
+    MEASURE _Mesures[Charges HT] =
+        CALCULATE (
+            SUM ( fait_finance[montant_ht] ),
+            fait_finance[base] = "ENGAGEMENT",
+            fait_finance[sens] = "SORTIE"
+        )
+
+    MEASURE _Mesures[Masse salariale] =
+        CALCULATE ( [Charges HT], fait_finance[nature] = "SALAIRE" )
+
+    MEASURE _Mesures[Resultat] = [Produits HT] - [Charges HT]
+
+    MEASURE _Mesures[Marge %] = DIVIDE ( [Resultat], [Produits HT] ) * 100
+
+    MEASURE _Mesures[Encaissements] =
+        CALCULATE (
+            SUM ( fait_finance[montant_ttc] ),
+            fait_finance[base] = "TRESORERIE",
+            fait_finance[sens] = "ENTREE"
+        )
+
+    MEASURE _Mesures[Decaissements] =
+        CALCULATE (
+            SUM ( fait_finance[montant_ttc] ),
+            fait_finance[base] = "TRESORERIE",
+            fait_finance[sens] = "SORTIE"
+        )
+
+    MEASURE _Mesures[Tresorerie nette] = [Encaissements] - [Decaissements]
+
+    // fait_facture contient aussi les devis : on ne garde que les factures.
+    MEASURE _Mesures[Creances en cours] =
+        CALCULATE ( SUM ( fait_facture[reste_du] ), fait_facture[type_document] = "FACTURE" )
+
+    MEASURE _Mesures[Creances en retard] =
+        CALCULATE (
+            SUM ( fait_facture[reste_du] ),
+            fait_facture[type_document] = "FACTURE",
+            fait_facture[jours_retard] > 0
+        )
+
+    MEASURE _Mesures[Retard moyen de paiement (j)] =
+        CALCULATE (
+            AVERAGE ( fait_facture[jours_retard] ),
+            fait_facture[type_document] = "FACTURE",
+            fait_facture[jours_retard] > 0
+        )
+
+    MEASURE _Mesures[Produits N-1] =
+        CALCULATE ( [Produits HT], SAMEPERIODLASTYEAR ( dim_date[date_key] ) )
+
+    MEASURE _Mesures[Croissance %] =
+        DIVIDE ( [Produits HT] - [Produits N-1], [Produits N-1] ) * 100
+
+    // ── Projets ─────────────────────────────────────────────────────────────
+    MEASURE _Mesures[Taches] = COUNTROWS ( fait_tache )
+
+    MEASURE _Mesures[Taches terminees] = SUM ( fait_tache[est_terminee] )
+
+    MEASURE _Mesures[Taches en retard] = SUM ( fait_tache[est_en_retard] )
+
+    MEASURE _Mesures[Taux de completion %] =
+        DIVIDE ( [Taches terminees], [Taches] ) * 100
+
+    MEASURE _Mesures[Delai moyen (j)] =
+        CALCULATE ( AVERAGE ( fait_tache[duree_reelle_jours] ), fait_tache[est_terminee] = 1 )
+
+    MEASURE _Mesures[Ecart au prevu (j)] =
+        CALCULATE ( AVERAGE ( fait_tache[ecart_jours] ), fait_tache[est_terminee] = 1 )
+
+    MEASURE _Mesures[Retard moyen tache (j)] =
+        CALCULATE ( AVERAGE ( fait_tache[retard_jours] ), fait_tache[est_en_retard] = 1 )
+
+    MEASURE _Mesures[Projets] =
+        CALCULATE ( COUNTROWS ( dim_projet ), dim_projet[projet_key] <> -1 )
+
+    MEASURE _Mesures[Projets en cours] =
+        CALCULATE ( COUNTROWS ( dim_projet ), dim_projet[statut] = "EN_COURS" )
+
+    MEASURE _Mesures[Duree moyenne projet (j)] =
+        AVERAGE ( dim_projet[duree_jours] )
+
+// Instruction requise par la vue Requete DAX : une requete doit se terminer
+// par un EVALUATE. Celle-ci ne renvoie qu'une ligne de controle.
+EVALUATE
+    ROW (
+        "Produits HT", [Produits HT],
+        "Charges HT", [Charges HT],
+        "Taches", [Taches],
+        "Taux de completion %", [Taux de completion %]
+    )

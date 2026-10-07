@@ -1,0 +1,74 @@
+{
+  "name": "antigone-rh-agent",
+  "version": "1.0.0",
+  "description": "Agent de monitoring Antigone RH - Installé sur les postes employés",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test:modules": "electron test-modules.js",
+    "test:launch": "electron test-launch.js",
+    "validate": "npm run test:modules",
+    "build": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:all": "electron-builder --win --mac",
+    "pack": "electron-builder --win --dir",
+    "pack:mac": "electron-builder --mac --dir"
+  },
+  "author": "Antigone RH",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^26.8.1"
+  },
+  "dependencies": {
+    "axios": "^1.6.5",
+    "electron-store": "^6.0.1"
+  },
+  "build": {
+    "appId": "com.antigone.rh.agent",
+    "productName": "Antigone RH Agent",
+    "artifactName": "AgentDesktop-Setup.${ext}",
+    "copyright": "Copyright © 2026 Antigone RH",
+    "toolsets": {
+      "winCodeSign": "1.1.0"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.business"
+    },
+    "dmg": {
+      "title": "Antigone RH Agent"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": true,
+      "menuCategory": "Antigone RH",
+      "runAfterFinish": true
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+% Packages nécessaires : \usepackage{longtable}, \usepackage{multirow}, \usepackage{array}
+% Sous-ensemble du backlog produit (backlog_antigone_rh.tex) affecté au Sprint 6.
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du Sprint 6 -- Assistant IA} \label{tab:backlog-sprint-6} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{6}{*}{M20} & \multirow{6}{*}{Assistant IA} & M20.1 & En tant qu'utilisateur, je souhaite discuter avec l'assistant IA en temps réel. & Élevée \\
+\cline{3-5}
+ & & M20.2 & En tant qu'utilisateur, je souhaite consulter l'historique de mes conversations avec l'assistant. & Faible \\
+\cline{3-5}
+ & & M20.3 & En tant qu'employé, je souhaite obtenir l'explication de mon bulletin de paie par l'IA. & Élevée \\
+\cline{3-5}
+ & & M20.4 & En tant que social media manager, je souhaite générer un media plan mensuel via l'IA. & Élevée \\
+\cline{3-5}
+ & & M20.5 & En tant que comptable, je souhaite rédiger une relance client via l'IA. & Élevée \\
+\cline{3-5}
+ & & M20.6 & En tant qu'administrateur, je souhaite réindexer la base de connaissances de l'assistant. & Élevée \\
+\hline
+\end{longtable}

@@ -1,0 +1,55 @@
+@startuml 01_securite_comptes
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #F3F8FF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Securite et Comptes"
+
+class Employe {
+  matricule
+  cin
+  nom
+  prenom
+  email
+  telephone
+  dateEmbauche
+  soldeConge
+  poste
+  departement
+  typeContrat
+  genre
+}
+
+class Compte {
+  username
+  passwordHash
+  enabled
+  mustChangePassword
+  lastLogin
+}
+
+class Role {
+  nom
+}
+
+class Permission {
+  permission
+}
+
+Employe "1" *-- "0..1" Compte : possede
+Compte  "0..*" -- "0..*" Role : est attribue
+Role    "0..*" -- "0..*" Permission : regroupe
+Employe "1" -- "0..*" Employe : encadre >
+
+note bottom of Compte
+  AccessLog (journal des connexions par
+  compte) est un detail d'implementation :
+  non represente a ce niveau d'analyse.
+end note
+
+@enduml

@@ -1,0 +1,76 @@
+@startuml 03_chef_projet
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF8F0
+  BorderColor #333333
+  ArrowColor #333333
+  FontSize 12
+}
+skinparam actor {
+  BorderColor #333333
+  FontSize 12
+}
+skinparam ArrowColor #333333
+
+title Espace Chef de Projet
+
+actor "Chef de Projet" as ChefProjet
+actor "Google Drive" as Drive <<systeme>>
+
+usecase "Gerer les projets,\ntaches et equipes" as UC_GererProjets
+usecase "Creer et suivre un projet" as UC_CreerProjet
+usecase "Constituer et gerer\nl'equipe" as UC_GererEquipe
+usecase "Repartir et suivre les\ntaches (Kanban)" as UC_RepartirTaches
+UC_GererProjets ..> UC_CreerProjet : <<include>>
+UC_GererProjets ..> UC_GererEquipe : <<include>>
+UC_GererProjets ..> UC_RepartirTaches : <<include>>
+
+usecase "Gerer le calendrier\nde production" as UC_CalendrierProd
+usecase "Planifier une production" as UC_PlanifierProd
+usecase "Assigner des ressources" as UC_AssignerRessources
+usecase "Reserver un creneau\nde tournage" as UC_ReserverCreneau
+UC_CalendrierProd ..> UC_PlanifierProd : <<include>>
+UC_CalendrierProd ..> UC_AssignerRessources : <<include>>
+UC_CalendrierProd ..> UC_ReserverCreneau : <<include>>
+
+usecase "Gerer les Media Plans" as UC_MediaPlans
+usecase "Construire un plan media" as UC_ConstruireMP
+usecase "Faire approuver un plan\nmedia (interne / client)" as UC_ApprouverMP
+usecase "Echanger via le fil\nde commentaires" as UC_CommenterMP
+UC_MediaPlans ..> UC_ConstruireMP : <<include>>
+UC_MediaPlans ..> UC_ApprouverMP : <<include>>
+UC_MediaPlans ..> UC_CommenterMP : <<include>>
+
+usecase "Gerer les clients" as UC_GererClients
+usecase "Ajouter un client" as UC_AjouterClient
+usecase "Modifier les informations\nclient" as UC_ModifierClient
+usecase "Consulter l'historique\nclient" as UC_HistoClient
+UC_GererClients ..> UC_AjouterClient : <<include>>
+UC_GererClients ..> UC_ModifierClient : <<include>>
+UC_GererClients ..> UC_HistoClient : <<include>>
+
+usecase "Planifier des reunions\nde projet" as UC_Reunions
+usecase "Suivre les competences\nde l'equipe" as UC_Competences
+
+usecase "Consulter les rapports\net tableaux de bord" as UC_RapportsProjet
+usecase "Generer un rapport\nde projet" as UC_GenererRapport
+usecase "Consulter les KPI" as UC_KPI
+usecase "Exporter les donnees" as UC_ExporterDonnees
+UC_RapportsProjet ..> UC_GenererRapport : <<include>>
+UC_RapportsProjet ..> UC_KPI : <<include>>
+UC_RapportsProjet ..> UC_ExporterDonnees : <<include>>
+
+ChefProjet -- UC_GererProjets
+ChefProjet -- UC_CalendrierProd
+ChefProjet -- UC_MediaPlans
+ChefProjet -- UC_GererClients
+ChefProjet -- UC_Reunions
+ChefProjet -- UC_Competences
+ChefProjet -- UC_RapportsProjet
+
+Drive -- UC_GererClients
+Drive -- UC_MediaPlans
+
+@enduml

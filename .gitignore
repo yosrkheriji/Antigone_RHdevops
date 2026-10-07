@@ -1,0 +1,44 @@
+# Lock files (tracked for CI/CD reproducibility)
+# package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Node modules
+node_modules/
+
+# Vite
+.vite/
+dist/
+
+# Maven
+Backend/target/
+*.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+Frontend/package-lock.json
+AgentDesktop/node_modules/
+Backend/target/
+README_AI_IDEAS.md
+
+# Secrets and local credentials
+Backend/service-account.json
+Backend/client-viewer-service-account.json
+Backend/fix_json.py
+Backend/tokens/

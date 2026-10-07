@@ -1,0 +1,1145 @@
+/*
+ * Styles du widget de chat IA Antigone.
+ *
+ * Trois regles tenues sans exception :
+ *
+ * 1. Aucune couleur en dur — tout passe par les variables `--aicw-*` posees par
+ *    ChatThemeProvider sur `.aicw-root`. Une couleur ecrite ici serait invisible
+ *    dans un audit de theme et casserait l'integration dans une app a la charte
+ *    differente.
+ * 2. Dimensions en `rem` — la taille de police de base est reglable par
+ *    l'utilisateur dans les apps Antigone (13 a 16 px). Des `px` figes
+ *    ignoreraient ce reglage.
+ * 3. Toutes les classes prefixees `aicw-` — le widget vit dans des applications
+ *    qui ont deja Tailwind et, cote RH, Ant Design.
+ */
+
+.aicw-root {
+  font-family: var(--aicw-font);
+  color: var(--aicw-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+.aicw-root *,
+.aicw-root *::before,
+.aicw-root *::after {
+  box-sizing: border-box;
+}
+
+/* ── Lanceur flottant ─────────────────────────────────────────────────────── */
+
+.aicw-launcher {
+  position: fixed;
+  right: 1.5rem;
+  /* Cale au-dessus d'AppSwitchButton, qui occupe deja right-6 bottom-6. */
+  bottom: 6rem;
+  z-index: 9990;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: 999px;
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  box-shadow: var(--aicw-shadow);
+  backdrop-filter: blur(12px);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.aicw-launcher:hover {
+  transform: translateY(-2px);
+  background: var(--aicw-surface-alt);
+}
+
+.aicw-launcher:focus-visible {
+  outline: 2px solid var(--aicw-primary);
+  outline-offset: 2px;
+}
+
+.aicw-launcher-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--aicw-primary);
+  color: var(--aicw-primary-text);
+  flex: none;
+}
+
+/* Pastille signalant une generation toujours en cours, panneau ferme. */
+.aicw-launcher-pulse {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--aicw-primary);
+  animation: aicw-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes aicw-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+/* ── Panneau ──────────────────────────────────────────────────────────────── */
+
+.aicw-overlay {
+  position: fixed;
+  inset: 0;
+  /* Au-dessus des elements flottants de l'application hote : AppSwitchButton
+     occupe z-index 10000 en bas a droite, exactement la ou se trouve le bouton
+     d'envoi du composer. En dessous, il intercepterait ces clics. */
+  z-index: 10005;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.aicw-overlay[data-open='true'] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.aicw-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10010;
+  width: min(30rem, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--aicw-bg);
+  border-left: 1px solid var(--aicw-border);
+  box-shadow: var(--aicw-shadow);
+  /* Translate plutot que demontage : une generation en cours survit a la
+     fermeture du panneau. */
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.22s;
+}
+
+.aicw-panel[data-open='true'] {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.aicw-panel[data-expanded='true'] {
+  width: 100vw;
+  max-width: 100vw;
+  border-left: none;
+}
+
+/* Sous 768px (breakpoint `md` de la charte), le panneau est plein ecran d'emblee. */
+@media (max-width: 767px) {
+  .aicw-panel {
+    width: 100vw;
+    max-width: 100vw;
+    border-left: none;
+  }
+  .aicw-launcher {
+    bottom: 5rem;
+    right: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aicw-panel,
+  .aicw-overlay,
+  .aicw-launcher,
+  .aicw-launcher-pulse {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Layout interne : barre laterale + conversation, en mode etendu. */
+.aicw-panel-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.aicw-conversation-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── En-tete ──────────────────────────────────────────────────────────────── */
+
+.aicw-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--aicw-border);
+  background: var(--aicw-surface);
+  flex: none;
+}
+
+.aicw-header-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.aicw-header-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aicw-header-subtitle {
+  font-size: 0.6875rem;
+  color: var(--aicw-text-secondary);
+}
+
+.aicw-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border: none;
+  border-radius: var(--aicw-radius-md);
+  background: transparent;
+  color: var(--aicw-text-secondary);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.aicw-icon-button:hover:not(:disabled) {
+  background: var(--aicw-primary-soft);
+  color: var(--aicw-primary);
+}
+
+.aicw-icon-button:focus-visible {
+  outline: 2px solid var(--aicw-primary);
+  outline-offset: 1px;
+}
+
+.aicw-icon-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ── Barre laterale des conversations ─────────────────────────────────────── */
+
+.aicw-sidebar {
+  width: 17rem;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--aicw-border);
+  background: var(--aicw-surface-alt);
+}
+
+.aicw-sidebar-head {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--aicw-border);
+}
+
+.aicw-new-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-primary);
+  color: var(--aicw-primary-text);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.aicw-new-button:hover:not(:disabled) { opacity: 0.9; }
+.aicw-new-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.aicw-search {
+  width: 100%;
+  padding: 0.4375rem 0.625rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.aicw-search::placeholder { color: var(--aicw-text-muted); }
+.aicw-search:focus { outline: none; border-color: var(--aicw-primary); }
+
+.aicw-conversation-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.aicw-conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--aicw-radius-md);
+  transition: background-color 0.15s ease;
+}
+
+/* Le libelle porte la selection ; les actions sont ses freres, jamais ses
+   enfants — un element interactif imbrique dans un bouton est du HTML invalide. */
+.aicw-conversation-select {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0;
+}
+
+.aicw-conversation-select:focus-visible {
+  outline: 2px solid var(--aicw-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.aicw-conversation-item:hover { background: var(--aicw-primary-soft); }
+
+.aicw-conversation-item[data-active='true'] {
+  background: var(--aicw-primary-soft);
+  color: var(--aicw-primary);
+  font-weight: 600;
+}
+
+.aicw-conversation-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aicw-conversation-rename {
+  flex: 1;
+  min-width: 0;
+  padding: 0.125rem 0.25rem;
+  border: 1px solid var(--aicw-primary);
+  border-radius: 6px;
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.aicw-conversation-rename:focus { outline: none; }
+
+.aicw-conversation-actions {
+  display: flex;
+  gap: 0.125rem;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.aicw-conversation-item:hover .aicw-conversation-actions,
+.aicw-conversation-item:focus-within .aicw-conversation-actions {
+  opacity: 1;
+}
+
+.aicw-mini-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--aicw-text-secondary);
+  cursor: pointer;
+}
+
+.aicw-mini-button:hover { background: var(--aicw-surface); color: var(--aicw-text); }
+.aicw-mini-button[data-danger='true']:hover { color: var(--aicw-danger); }
+.aicw-mini-button[data-active='true'] { color: var(--aicw-primary); opacity: 1; }
+
+.aicw-pin-indicator { color: var(--aicw-primary); flex: none; }
+
+/* ── Messages ─────────────────────────────────────────────────────────────── */
+
+.aicw-messages {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.aicw-messages-scroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.aicw-message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  max-width: 100%;
+}
+
+.aicw-message[data-role='USER'] { align-items: flex-end; }
+.aicw-message[data-role='ASSISTANT'] { align-items: stretch; }
+
+.aicw-bubble {
+  max-width: 85%;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--aicw-radius-lg);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.aicw-bubble[data-role='USER'] {
+  background: var(--aicw-primary);
+  color: var(--aicw-primary-text);
+  border-bottom-right-radius: 0.25rem;
+}
+
+.aicw-bubble[data-role='ASSISTANT'] {
+  max-width: 100%;
+  background: var(--aicw-surface);
+  border: 1px solid var(--aicw-border);
+  border-bottom-left-radius: 0.25rem;
+}
+
+.aicw-message-meta {
+  font-size: 0.6875rem;
+  color: var(--aicw-text-muted);
+  padding: 0 0.25rem;
+}
+
+/* Curseur de frappe, visible tant que le flux n'est pas clos. */
+.aicw-caret {
+  display: inline-block;
+  width: 0.5rem;
+  height: 1em;
+  margin-left: 0.125rem;
+  vertical-align: text-bottom;
+  background: var(--aicw-primary);
+  animation: aicw-blink 1s step-end infinite;
+}
+
+@keyframes aicw-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ── Rendu markdown ───────────────────────────────────────────────────────── */
+
+.aicw-markdown > *:first-child { margin-top: 0; }
+.aicw-markdown > *:last-child { margin-bottom: 0; }
+
+.aicw-markdown p { margin: 0 0 0.625rem; }
+.aicw-markdown ul,
+.aicw-markdown ol { margin: 0 0 0.625rem; padding-left: 1.25rem; }
+.aicw-markdown li { margin-bottom: 0.25rem; }
+
+.aicw-markdown h1,
+.aicw-markdown h2,
+.aicw-markdown h3 {
+  margin: 0.875rem 0 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.aicw-markdown a { color: var(--aicw-primary); text-decoration: underline; }
+
+.aicw-markdown code {
+  padding: 0.0625rem 0.3125rem;
+  border-radius: 5px;
+  background: var(--aicw-primary-soft);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125em;
+}
+
+.aicw-markdown pre {
+  margin: 0 0 0.625rem;
+  padding: 0.75rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-surface-alt);
+  overflow-x: auto;
+}
+
+.aicw-markdown pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.aicw-markdown blockquote {
+  margin: 0 0 0.625rem;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--aicw-border);
+  color: var(--aicw-text-secondary);
+}
+
+.aicw-markdown table {
+  width: 100%;
+  margin-bottom: 0.625rem;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.aicw-markdown th,
+.aicw-markdown td {
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--aicw-border);
+  text-align: left;
+}
+
+.aicw-markdown th { background: var(--aicw-surface-alt); font-weight: 600; }
+
+/* Coloration syntaxique : teintes derivees du theme, pas d'un theme highlight.js
+   importe qui jurerait avec la charte de l'application hote. */
+.aicw-markdown .hljs-keyword,
+.aicw-markdown .hljs-selector-tag,
+.aicw-markdown .hljs-built_in { color: var(--aicw-primary); font-weight: 600; }
+.aicw-markdown .hljs-string,
+.aicw-markdown .hljs-attr { color: var(--aicw-success); }
+.aicw-markdown .hljs-number,
+.aicw-markdown .hljs-literal { color: var(--aicw-warning); }
+.aicw-markdown .hljs-comment { color: var(--aicw-text-muted); font-style: italic; }
+.aicw-markdown .hljs-title,
+.aicw-markdown .hljs-name { color: var(--aicw-text); font-weight: 600; }
+
+/* ── Indicateurs d'outils ─────────────────────────────────────────────────── */
+
+.aicw-toolcalls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.aicw-toolcall {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  align-self: flex-start;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  background: var(--aicw-primary-soft);
+  color: var(--aicw-text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+.aicw-toolcall[data-status='error'] { color: var(--aicw-danger); }
+.aicw-toolcall[data-status='success'] { color: var(--aicw-text-secondary); }
+
+.aicw-spinner {
+  width: 0.6875rem;
+  height: 0.6875rem;
+  flex: none;
+  border: 2px solid var(--aicw-primary);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: aicw-spin 0.7s linear infinite;
+}
+
+@keyframes aicw-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aicw-spinner { animation-duration: 2s; }
+  .aicw-caret { animation: none; opacity: 1; }
+}
+
+.aicw-toolcall-check { color: var(--aicw-success); flex: none; }
+.aicw-toolcall-warn { color: var(--aicw-danger); flex: none; }
+
+/* ── Resultats structures ─────────────────────────────────────────────────── */
+
+.aicw-result {
+  margin-top: 0.625rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-lg);
+  background: var(--aicw-surface);
+  overflow: hidden;
+}
+
+.aicw-result-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--aicw-border);
+  background: var(--aicw-surface-alt);
+}
+
+.aicw-result-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.aicw-result-body { padding: 0.875rem; }
+
+.aicw-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid currentColor;
+}
+
+.aicw-badge[data-tone='SOFT'] { color: var(--aicw-primary); }
+.aicw-badge[data-tone='FIRM'] { color: var(--aicw-warning); }
+.aicw-badge[data-tone='FORMAL'] { color: var(--aicw-danger); }
+.aicw-badge[data-variant='sent'] { color: var(--aicw-success); }
+
+.aicw-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.aicw-stat {
+  flex: 1 1 8rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-surface-alt);
+}
+
+.aicw-stat-label {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--aicw-text-secondary);
+  margin-bottom: 0.125rem;
+}
+
+.aicw-stat-value {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.aicw-stat-value[data-trend='up'] { color: var(--aicw-success); }
+.aicw-stat-value[data-trend='down'] { color: var(--aicw-danger); }
+
+/* ── Media plan : grille de cartes premium ──────────────────────────────────
+   Chaque publication proposee devient une carte plutot qu'une ligne de liste :
+   c'est ce que l'utilisateur va reprendre telle quelle dans le Media Plan,
+   elle merite d'etre lisible et engageante en un coup d'oeil. */
+
+.aicw-mp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+
+.aicw-mp-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-lg);
+  background: linear-gradient(165deg, var(--aicw-surface) 0%, var(--aicw-surface-alt) 100%);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.aicw-mp-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.09);
+  border-color: var(--aicw-primary);
+}
+
+.aicw-mp-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.aicw-mp-card-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--aicw-text-secondary);
+}
+
+.aicw-mp-card-dot { margin: 0 0.0625rem; }
+
+.aicw-mp-pill {
+  flex: none;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 999px;
+  background: var(--aicw-primary-soft);
+  color: var(--aicw-primary);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.aicw-mp-card-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--aicw-text);
+}
+
+.aicw-mp-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.aicw-mp-tag {
+  padding: 0.125rem 0.4375rem;
+  border-radius: var(--aicw-radius-md);
+  border: 1px solid var(--aicw-border);
+  background: var(--aicw-surface);
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--aicw-text-secondary);
+}
+
+.aicw-mp-card-field {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--aicw-text-secondary);
+}
+
+.aicw-mp-card-field-label {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--aicw-text-muted);
+  margin-bottom: 0.0625rem;
+}
+
+/* Apercu d'email, evoquant un client mail sans imiter une marque precise. */
+.aicw-email-preview {
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-md);
+  overflow: hidden;
+}
+
+.aicw-email-field {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.4375rem 0.625rem;
+  border-bottom: 1px solid var(--aicw-border);
+  font-size: 0.75rem;
+  background: var(--aicw-surface-alt);
+}
+
+.aicw-email-field-label {
+  flex: none;
+  width: 3.75rem;
+  color: var(--aicw-text-secondary);
+}
+
+.aicw-email-field-value {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+/* Bandeau de marque de l'apercu, reprenant celui de l'email reellement expedie :
+   l'utilisateur valide une mise en page, pas seulement un texte brut. */
+.aicw-email-brandbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--aicw-primary);
+  color: var(--aicw-primary-text);
+}
+
+.aicw-email-brandbar[data-tone='FIRM'] { background: var(--aicw-warning); }
+.aicw-email-brandbar[data-tone='FORMAL'] { background: var(--aicw-danger); }
+
+.aicw-email-brandbar-name {
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.aicw-email-brandbar-sub {
+  font-size: 0.6875rem;
+  opacity: 0.85;
+}
+
+/* Bandeau « adresse a », sous le bandeau de marque : reprend le logo et le nom du
+   client destinataire tels qu'ils apparaissent dans l'email reellement expedie. */
+.aicw-email-personalization {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  background: var(--aicw-surface-alt);
+  border-bottom: 1px solid var(--aicw-border);
+}
+
+.aicw-email-personalization-logo {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.375rem;
+  object-fit: cover;
+  border: 1px solid var(--aicw-border);
+}
+
+.aicw-email-personalization-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--aicw-text);
+}
+
+.aicw-email-body {
+  padding: 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  max-height: 18rem;
+  overflow-y: auto;
+}
+
+.aicw-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.aicw-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.75rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.aicw-button:hover:not(:disabled) { background: var(--aicw-surface-alt); }
+.aicw-button:focus-visible { outline: 2px solid var(--aicw-primary); outline-offset: 1px; }
+.aicw-button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.aicw-button[data-variant='primary'] {
+  background: var(--aicw-primary);
+  border-color: var(--aicw-primary);
+  color: var(--aicw-primary-text);
+}
+
+.aicw-button[data-variant='primary']:hover:not(:disabled) { opacity: 0.9; }
+
+.aicw-notice {
+  margin-top: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-surface-alt);
+  border: 1px solid var(--aicw-border);
+  font-size: 0.75rem;
+  color: var(--aicw-text-secondary);
+  line-height: 1.5;
+}
+
+.aicw-reason-list {
+  margin: 0;
+  padding-left: 1.125rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.aicw-reason-list li { margin-bottom: 0.25rem; }
+
+/* ── Composer ─────────────────────────────────────────────────────────────── */
+
+.aicw-composer {
+  flex: none;
+  padding: 0.75rem;
+  border-top: 1px solid var(--aicw-border);
+  background: var(--aicw-surface);
+}
+
+.aicw-composer-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-lg);
+  background: var(--aicw-surface-alt);
+  transition: border-color 0.15s ease;
+}
+
+.aicw-composer-box:focus-within { border-color: var(--aicw-primary); }
+
+.aicw-composer-input {
+  flex: 1;
+  min-width: 0;
+  /* Environ six lignes, puis defilement interne. */
+  max-height: 9rem;
+  padding: 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: none;
+  overflow-y: auto;
+}
+
+.aicw-composer-input:focus { outline: none; }
+.aicw-composer-input::placeholder { color: var(--aicw-text-muted); }
+.aicw-composer-input:disabled { cursor: not-allowed; }
+
+.aicw-send-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  border: none;
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-primary);
+  color: var(--aicw-primary-text);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.aicw-send-button:disabled { opacity: 0.4; cursor: not-allowed; }
+.aicw-send-button:focus-visible { outline: 2px solid var(--aicw-primary); outline-offset: 2px; }
+
+.aicw-stop-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: 999px;
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aicw-stop-button:hover { border-color: var(--aicw-danger); color: var(--aicw-danger); }
+
+.aicw-composer-hint {
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
+  color: var(--aicw-text-muted);
+  text-align: center;
+}
+
+/* ── Etats ────────────────────────────────────────────────────────────────── */
+
+.aicw-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.aicw-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--aicw-radius-lg);
+  background: var(--aicw-primary-soft);
+  color: var(--aicw-primary);
+}
+
+.aicw-empty-title { font-size: 0.9375rem; font-weight: 600; }
+
+.aicw-empty-text {
+  font-size: 0.8125rem;
+  color: var(--aicw-text-secondary);
+  max-width: 22rem;
+  line-height: 1.6;
+}
+
+.aicw-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+  max-width: 24rem;
+  margin-top: 0.5rem;
+}
+
+.aicw-suggestion {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: var(--aicw-radius-md);
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.aicw-suggestion:hover {
+  border-color: var(--aicw-primary);
+  background: var(--aicw-primary-soft);
+}
+
+.aicw-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--aicw-radius-md);
+  border: 1px solid currentColor;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.aicw-banner[data-severity='error'] { color: var(--aicw-danger); }
+.aicw-banner[data-severity='warning'] { color: var(--aicw-warning); }
+
+.aicw-banner-content { flex: 1; min-width: 0; color: var(--aicw-text); }
+.aicw-banner-title { font-weight: 700; margin-bottom: 0.125rem; color: inherit; }
+
+/* Squelettes de chargement : evitent le flash de contenu vide a l'ouverture. */
+.aicw-skeleton {
+  border-radius: var(--aicw-radius-lg);
+  background: linear-gradient(
+    90deg,
+    var(--aicw-surface-alt) 25%,
+    var(--aicw-primary-soft) 37%,
+    var(--aicw-surface-alt) 63%
+  );
+  background-size: 400% 100%;
+  animation: aicw-shimmer 1.4s ease infinite;
+}
+
+@keyframes aicw-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aicw-skeleton { animation: none; }
+}
+
+.aicw-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* ── Bouton « nouveaux messages » ─────────────────────────────────────────── */
+
+.aicw-scroll-bottom {
+  position: absolute;
+  left: 50%;
+  bottom: 1rem;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--aicw-border);
+  border-radius: 999px;
+  background: var(--aicw-surface);
+  color: var(--aicw-text);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--aicw-shadow);
+  z-index: 2;
+}
+
+/* Zone lue par les lecteurs d'ecran, invisible a l'ecran. */
+.aicw-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

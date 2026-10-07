@@ -1,0 +1,281 @@
+% Packages nécessaires dans le préambule du document :
+% \usepackage{longtable}
+% \usepackage{multirow}
+% \usepackage{array}
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du produit -- Antigone RH} \label{tab:backlog-antigone-rh} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{7}{*}{M1} & \multirow{7}{*}{Authentification} & M1.1 & En tant qu'utilisateur, je souhaite me connecter à la plateforme. & Moyenne \\
+\cline{3-5}
+ & & M1.2 & En tant qu'utilisateur, je souhaite réinitialiser mon mot de passe. & Moyenne \\
+\cline{3-5}
+ & & M1.3 & En tant qu'utilisateur, je souhaite me déconnecter du système. & Faible \\
+\cline{3-5}
+ & & M1.4 & En tant qu'administrateur, je souhaite gérer les accès utilisateurs. & Moyenne \\
+\cline{3-5}
+ & & M1.5 & En tant qu'utilisateur, je souhaite modifier son mot de passe. & Faible \\
+\cline{3-5}
+ & & M1.6 & En tant qu'utilisateur, je souhaite consulter son profil. & Faible \\
+\cline{3-5}
+ & & M1.7 & En tant qu'utilisateur, je souhaite modifier ses informations personnelles. & Moyenne \\
+\hline
+\multirow{8}{*}{M2} & \multirow{8}{*}{Gestion des utilisateurs et des rôles} & M2.1 & En tant qu'administrateur, je souhaite ajouter un utilisateur. & Moyenne \\
+\cline{3-5}
+ & & M2.2 & En tant qu'administrateur, je souhaite modifier un utilisateur. & Moyenne \\
+\cline{3-5}
+ & & M2.3 & En tant qu'administrateur, je souhaite supprimer un utilisateur. & Moyenne \\
+\cline{3-5}
+ & & M2.4 & En tant qu'administrateur, je souhaite attribuer un rôle à un utilisateur. & Élevée \\
+\cline{3-5}
+ & & M2.5 & En tant qu'administrateur, je souhaite consulter la liste des utilisateurs. & Faible \\
+\cline{3-5}
+ & & M2.6 & En tant qu'administrateur, je souhaite créer un rôle et lui associer des permissions. & Moyenne \\
+\cline{3-5}
+ & & M2.7 & En tant qu'administrateur, je souhaite modifier les permissions d'un rôle existant. & Moyenne \\
+\cline{3-5}
+ & & M2.8 & En tant qu'administrateur, je souhaite supprimer un rôle. & Faible \\
+\hline
+\multirow{8}{*}{M3} & \multirow{8}{*}{Gestion des clients} & M3.1 & En tant que coordinateur, je souhaite ajouter un client. & Moyenne \\
+\cline{3-5}
+ & & M3.2 & En tant que coordinateur, je souhaite modifier les informations d'un client. & Moyenne \\
+\cline{3-5}
+ & & M3.3 & En tant que coordinateur, je souhaite supprimer un client. & Faible \\
+\cline{3-5}
+ & & M3.4 & En tant que coordinateur, je souhaite consulter la liste des clients. & Faible \\
+\cline{3-5}
+ & & M3.5 & En tant que coordinateur, je souhaite ajouter un contact pour un client. & Faible \\
+\cline{3-5}
+ & & M3.6 & En tant que coordinateur, je souhaite associer un dossier Google Drive à un client. & Élevée \\
+\cline{3-5}
+ & & M3.7 & En tant que coordinateur, je souhaite consulter les fichiers Drive d'un client. & Moyenne \\
+\cline{3-5}
+ & & M3.8 & En tant que client, je souhaite me connecter à mon portail dédié. & Moyenne \\
+\hline
+\multirow{9}{*}{M4} & \multirow{9}{*}{Gestion des employés} & M4.1 & En tant qu'administrateur RH, je souhaite ajouter un employé. & Moyenne \\
+\cline{3-5}
+ & & M4.2 & En tant qu'administrateur RH, je souhaite modifier la fiche d'un employé. & Moyenne \\
+\cline{3-5}
+ & & M4.3 & En tant qu'administrateur RH, je souhaite archiver ou désarchiver un employé. & Faible \\
+\cline{3-5}
+ & & M4.4 & En tant qu'administrateur RH, je souhaite consulter l'organigramme de l'entreprise. & Moyenne \\
+\cline{3-5}
+ & & M4.5 & En tant qu'administrateur RH, je souhaite rechercher et filtrer les employés. & Faible \\
+\cline{3-5}
+ & & M4.6 & En tant qu'administrateur RH, je souhaite exporter la liste des employés en CSV. & Faible \\
+\cline{3-5}
+ & & M4.7 & En tant qu'administrateur RH, je souhaite gérer les compétences d'un employé. & Moyenne \\
+\cline{3-5}
+ & & M4.8 & En tant qu'administrateur RH, je souhaite gérer les documents d'un employé avec suivi d'expiration. & Moyenne \\
+\cline{3-5}
+ & & M4.9 & En tant qu'administrateur RH, je souhaite gérer les tâches obligatoires assignées à un employé. & Moyenne \\
+\hline
+\multirow{8}{*}{M5} & \multirow{8}{*}{Demandes RH} & M5.1 & En tant qu'employé, je souhaite soumettre une demande de congé. & Moyenne \\
+\cline{3-5}
+ & & M5.2 & En tant qu'employé, je souhaite soumettre une demande d'autorisation. & Faible \\
+\cline{3-5}
+ & & M5.3 & En tant qu'employé, je souhaite soumettre une demande de télétravail. & Faible \\
+\cline{3-5}
+ & & M5.4 & En tant qu'employé, je souhaite joindre un justificatif à une demande. & Faible \\
+\cline{3-5}
+ & & M5.5 & En tant qu'employé, je souhaite annuler une demande soumise. & Faible \\
+\cline{3-5}
+ & & M5.6 & En tant qu'employé, je souhaite consulter l'historique de mes demandes. & Faible \\
+\cline{3-5}
+ & & M5.7 & En tant qu'employé, je souhaite soumettre une demande papier hors ligne. & Moyenne \\
+\cline{3-5}
+ & & M5.8 & En tant qu'employé, je souhaite consulter le calcul automatique du nombre de jours demandés. & Moyenne \\
+\hline
+\multirow{5}{*}{M6} & \multirow{5}{*}{Validation des demandes} & M6.1 & En tant que validateur, je souhaite consulter les demandes en attente de validation. & Faible \\
+\cline{3-5}
+ & & M6.2 & En tant que validateur, je souhaite approuver une demande. & Moyenne \\
+\cline{3-5}
+ & & M6.3 & En tant que validateur, je souhaite refuser une demande avec motif. & Moyenne \\
+\cline{3-5}
+ & & M6.4 & En tant que validateur, je souhaite valider ou refuser plusieurs demandes en lot. & Élevée \\
+\cline{3-5}
+ & & M6.5 & En tant que validateur, je souhaite consulter l'historique de validation d'une demande. & Moyenne \\
+\hline
+\multirow{5}{*}{M7} & \multirow{5}{*}{Calendrier \& Horaires} & M7.1 & En tant qu'employé, je souhaite consulter le calendrier de l'entreprise. & Faible \\
+\cline{3-5}
+ & & M7.2 & En tant qu'administrateur, je souhaite gérer les jours fériés et types de jours. & Moyenne \\
+\cline{3-5}
+ & & M7.3 & En tant qu'administrateur, je souhaite définir les horaires de travail. & Moyenne \\
+\cline{3-5}
+ & & M7.4 & En tant qu'administrateur, je souhaite définir des restrictions de congés par période. & Élevée \\
+\cline{3-5}
+ & & M7.5 & En tant qu'administrateur RH, je souhaite consulter les employés en congé aujourd'hui. & Faible \\
+\hline
+\multirow{4}{*}{M8} & \multirow{4}{*}{Réunions} & M8.1 & En tant qu'employé, je souhaite planifier une réunion. & Moyenne \\
+\cline{3-5}
+ & & M8.2 & En tant qu'employé, je souhaite répondre à une invitation de réunion. & Faible \\
+\cline{3-5}
+ & & M8.3 & En tant qu'employé, je souhaite consulter mes réunions par période. & Faible \\
+\cline{3-5}
+ & & M8.4 & En tant qu'employé, je souhaite supprimer une réunion. & Faible \\
+\hline
+\multirow{5}{*}{M9} & \multirow{5}{*}{Suivi \& Monitoring} & M9.1 & En tant que système, je souhaite enregistrer automatiquement les heures via l'agent de bureau. & Élevée \\
+\cline{3-5}
+ & & M9.2 & En tant qu'administrateur, je souhaite consulter le suivi temps réel des présences. & Moyenne \\
+\cline{3-5}
+ & & M9.3 & En tant qu'administrateur, je souhaite générer un rapport d'inactivité. & Élevée \\
+\cline{3-5}
+ & & M9.4 & En tant qu'administrateur, je souhaite statuer sur un rapport d'inactivité. & Moyenne \\
+\cline{3-5}
+ & & M9.5 & En tant qu'administrateur, je souhaite consulter l'historique de connexion d'un employé. & Moyenne \\
+\hline
+\multirow{4}{*}{M10} & \multirow{4}{*}{Référentiels} & M10.1 & En tant qu'administrateur, je souhaite ajouter une valeur de référentiel. & Faible \\
+\cline{3-5}
+ & & M10.2 & En tant qu'administrateur, je souhaite modifier une valeur de référentiel. & Faible \\
+\cline{3-5}
+ & & M10.3 & En tant qu'administrateur, je souhaite activer ou désactiver une valeur de référentiel. & Faible \\
+\cline{3-5}
+ & & M10.4 & En tant qu'utilisateur, je souhaite consulter les référentiels par type. & Faible \\
+\hline
+\multirow{3}{*}{M11} & \multirow{3}{*}{Notifications} & M11.1 & En tant qu'utilisateur, je souhaite consulter mes notifications. & Faible \\
+\cline{3-5}
+ & & M11.2 & En tant qu'utilisateur, je souhaite consulter le nombre de notifications non lues. & Faible \\
+\cline{3-5}
+ & & M11.3 & En tant qu'utilisateur, je souhaite marquer mes notifications comme lues. & Faible \\
+\hline
+\multirow{9}{*}{M12} & \multirow{9}{*}{Gestion des projets} & M12.1 & En tant que chef de projet, je souhaite créer un projet. & Moyenne \\
+\cline{3-5}
+ & & M12.2 & En tant que chef de projet, je souhaite modifier un projet. & Moyenne \\
+\cline{3-5}
+ & & M12.3 & En tant que chef de projet, je souhaite changer le statut d'un projet. & Faible \\
+\cline{3-5}
+ & & M12.4 & En tant qu'employé, je souhaite consulter mes projets. & Faible \\
+\cline{3-5}
+ & & M12.5 & En tant que chef de projet, je souhaite filtrer les projets par client, employé ou statut. & Moyenne \\
+\cline{3-5}
+ & & M12.6 & En tant que chef de projet, je souhaite assigner une équipe à un projet. & Moyenne \\
+\cline{3-5}
+ & & M12.7 & En tant que chef de projet, je souhaite consulter le rapport de cycle de vie d'un projet. & Élevée \\
+\cline{3-5}
+ & & M12.8 & En tant que chef de projet, je souhaite créer une équipe. & Faible \\
+\cline{3-5}
+ & & M12.9 & En tant que chef de projet, je souhaite gérer les membres d'une équipe (ajouter/retirer). & Moyenne \\
+\hline
+\multirow{7}{*}{M13} & \multirow{7}{*}{Gestion des tâches} & M13.1 & En tant que chef de projet, je souhaite créer une tâche. & Faible \\
+\cline{3-5}
+ & & M13.2 & En tant que chef de projet, je souhaite assigner une tâche à un employé. & Moyenne \\
+\cline{3-5}
+ & & M13.3 & En tant qu'employé, je souhaite changer le statut d'une tâche sur le tableau Kanban. & Faible \\
+\cline{3-5}
+ & & M13.4 & En tant que chef de projet, je souhaite définir une échéance pour une tâche. & Faible \\
+\cline{3-5}
+ & & M13.5 & En tant que chef de projet, je souhaite archiver ou désarchiver une tâche. & Faible \\
+\cline{3-5}
+ & & M13.6 & En tant que chef de projet, je souhaite envoyer une relance sur une tâche en retard. & Faible \\
+\cline{3-5}
+ & & M13.7 & En tant qu'administrateur, je souhaite consulter le tableau de bord des tâches. & Moyenne \\
+\hline
+\multirow{4}{*}{M14} & \multirow{4}{*}{Calendrier de production} & M14.1 & En tant que coordinateur, je souhaite planifier un créneau de tournage. & Moyenne \\
+\cline{3-5}
+ & & M14.2 & En tant qu'employé, je souhaite consulter le calendrier des tournages. & Faible \\
+\cline{3-5}
+ & & M14.3 & En tant que coordinateur, je souhaite marquer un créneau comme urgent. & Faible \\
+\cline{3-5}
+ & & M14.4 & En tant que coordinateur, je souhaite valider ou rejeter un shooting. & Moyenne \\
+\hline
+\multirow{10}{*}{M15} & \multirow{10}{*}{Media Plan} & M15.1 & En tant que social media manager, je souhaite créer une ligne de media plan. & Moyenne \\
+\cline{3-5}
+ & & M15.2 & En tant que social media manager, je souhaite créer plusieurs lignes de media plan en masse. & Élevée \\
+\cline{3-5}
+ & & M15.3 & En tant qu'employé, je souhaite consulter mon media plan. & Faible \\
+\cline{3-5}
+ & & M15.4 & En tant qu'administrateur, je souhaite consulter tous les media plans. & Faible \\
+\cline{3-5}
+ & & M15.5 & En tant que social media manager, je souhaite soumettre un media plan pour validation client. & Moyenne \\
+\cline{3-5}
+ & & M15.6 & En tant que manager, je souhaite approuver ou désapprouver un media plan en interne. & Moyenne \\
+\cline{3-5}
+ & & M15.7 & En tant que client, je souhaite approuver ou désapprouver un media plan. & Moyenne \\
+\cline{3-5}
+ & & M15.8 & En tant que manager, je souhaite ajouter des rectifications à un media plan. & Faible \\
+\cline{3-5}
+ & & M15.9 & En tant qu'utilisateur, je souhaite commenter une ligne de media plan. & Faible \\
+\cline{3-5}
+ & & M15.10 & En tant qu'administrateur, je souhaite assigner un employé à un client pour le media plan. & Moyenne \\
+\hline
+\multirow{7}{*}{M16} & \multirow{7}{*}{Finance - Facturation} & M16.1 & En tant que comptable, je souhaite créer une facture. & Moyenne \\
+\cline{3-5}
+ & & M16.2 & En tant que comptable, je souhaite créer un devis. & Moyenne \\
+\cline{3-5}
+ & & M16.3 & En tant que comptable, je souhaite marquer une facture comme payée. & Faible \\
+\cline{3-5}
+ & & M16.4 & En tant que comptable, je souhaite enregistrer un paiement partiel de facture. & Moyenne \\
+\cline{3-5}
+ & & M16.5 & En tant que comptable, je souhaite consulter les factures impayées. & Faible \\
+\cline{3-5}
+ & & M16.6 & En tant que comptable, je souhaite gérer le catalogue de services. & Faible \\
+\cline{3-5}
+ & & M16.7 & En tant que comptable, je souhaite générer et envoyer une relance client. & Moyenne \\
+\hline
+\multirow{7}{*}{M17} & \multirow{7}{*}{Finance - Paie} & M17.1 & En tant que comptable, je souhaite configurer les paramètres de paie (CNSS, TFP...). & Élevée \\
+\cline{3-5}
+ & & M17.2 & En tant que comptable, je souhaite configurer les barèmes IRPP. & Élevée \\
+\cline{3-5}
+ & & M17.3 & En tant que comptable, je souhaite calculer le bulletin de paie d'un employé. & Élevée \\
+\cline{3-5}
+ & & M17.4 & En tant que comptable, je souhaite générer les bulletins de paie de tous les employés. & Élevée \\
+\cline{3-5}
+ & & M17.5 & En tant que comptable, je souhaite consulter les bulletins de paie par mois. & Faible \\
+\cline{3-5}
+ & & M17.6 & En tant que comptable, je souhaite enregistrer un acompte sur salaire. & Moyenne \\
+\cline{3-5}
+ & & M17.7 & En tant que comptable, je souhaite marquer un bulletin de paie comme payé. & Faible \\
+\hline
+\multirow{5}{*}{M18} & \multirow{5}{*}{Finance - Charges \& Dettes} & M18.1 & En tant que comptable, je souhaite ajouter une charge fixe. & Faible \\
+\cline{3-5}
+ & & M18.2 & En tant que comptable, je souhaite ajouter une charge variable. & Faible \\
+\cline{3-5}
+ & & M18.3 & En tant que comptable, je souhaite enregistrer le paiement d'une charge fixe. & Faible \\
+\cline{3-5}
+ & & M18.4 & En tant que comptable, je souhaite consulter l'état des charges par mois. & Moyenne \\
+\cline{3-5}
+ & & M18.5 & En tant que comptable, je souhaite gérer les dettes de l'agence et leurs paiements. & Moyenne \\
+\hline
+\multirow{4}{*}{M19} & \multirow{4}{*}{Finance - CNSS \& TVA} & M19.1 & En tant que comptable, je souhaite consulter la suggestion de déclaration CNSS trimestrielle. & Élevée \\
+\cline{3-5}
+ & & M19.2 & En tant que comptable, je souhaite enregistrer une déclaration CNSS. & Moyenne \\
+\cline{3-5}
+ & & M19.3 & En tant que comptable, je souhaite marquer une déclaration CNSS comme payée. & Faible \\
+\cline{3-5}
+ & & M19.4 & En tant que comptable, je souhaite consulter le tableau de bord financier (TVA, résultat net). & Élevée \\
+\hline
+\multirow{6}{*}{M20} & \multirow{6}{*}{Assistant IA} & M20.1 & En tant qu'utilisateur, je souhaite discuter avec l'assistant IA en temps réel. & Élevée \\
+\cline{3-5}
+ & & M20.2 & En tant qu'utilisateur, je souhaite consulter l'historique de mes conversations avec l'assistant. & Faible \\
+\cline{3-5}
+ & & M20.3 & En tant qu'employé, je souhaite obtenir l'explication de mon bulletin de paie par l'IA. & Élevée \\
+\cline{3-5}
+ & & M20.4 & En tant que social media manager, je souhaite générer un media plan mensuel via l'IA. & Élevée \\
+\cline{3-5}
+ & & M20.5 & En tant que comptable, je souhaite rédiger une relance client via l'IA. & Élevée \\
+\cline{3-5}
+ & & M20.6 & En tant qu'administrateur, je souhaite réindexer la base de connaissances de l'assistant. & Élevée \\
+\hline
+\multirow{3}{*}{M21} & \multirow{3}{*}{Tableau de bord Admin} & M21.1 & En tant qu'administrateur, je souhaite consulter le tableau de bord global. & Moyenne \\
+\cline{3-5}
+ & & M21.2 & En tant qu'administrateur, je souhaite consulter les alertes du tableau de bord. & Moyenne \\
+\cline{3-5}
+ & & M21.3 & En tant qu'administrateur, je souhaite consulter le détail d'un projet depuis le tableau de bord. & Faible \\
+\hline
+\end{longtable}

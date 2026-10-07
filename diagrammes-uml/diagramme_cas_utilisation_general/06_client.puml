@@ -1,0 +1,36 @@
+@startuml 06_client
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFFDF0
+  BorderColor #333333
+  ArrowColor #333333
+  FontSize 12
+}
+skinparam actor {
+  BorderColor #333333
+  FontSize 12
+}
+skinparam ArrowColor #333333
+
+title Espace Client
+
+actor "Client" as Client
+actor "Google Drive" as Drive <<systeme>>
+
+usecase "Se connecter au\nportail client" as UC_ClientLogin
+usecase "Consulter l'avancement\nde ses projets" as UC_ClientProjets
+usecase "Consulter ses\nmedia plans" as UC_ClientMediaPlans
+usecase "Commenter un\nplan media" as UC_ClientCommenter
+usecase "Acceder a son espace\nGoogle Drive dedie" as UC_ClientDrive
+
+Client -- UC_ClientLogin
+Client -- UC_ClientProjets
+Client -- UC_ClientMediaPlans
+Client -- UC_ClientCommenter
+Client -- UC_ClientDrive
+
+Drive -- UC_ClientDrive
+
+@enduml

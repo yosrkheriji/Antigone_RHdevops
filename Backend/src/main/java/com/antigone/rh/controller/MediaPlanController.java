@@ -1,0 +1,124 @@
+package com.antigone.rh.controller;
+
+import com.antigone.rh.dto.ApiResponse;
+import com.antigone.rh.dto.MediaPlanDTO;
+import com.antigone.rh.dto.MediaPlanRequest;
+import com.antigone.rh.service.MediaPlanService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/media-plans")
+@RequiredArgsConstructor
+public class MediaPlanController {
+
+    private final MediaPlanService mediaPlanService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<MediaPlanDTO>>> getAll() {
+        return ResponseEntity.ok(ApiResponse.ok(mediaPlanService.findAll()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok(mediaPlanService.findById(id)));
+    }
+
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<ApiResponse<List<MediaPlanDTO>>> getByClient(@PathVariable Long clientId) {
+        return ResponseEntity.ok(ApiResponse.ok(mediaPlanService.findByClientId(clientId)));
+    }
+
+    @GetMapping("/employe/{employeId}")
+    public ResponseEntity<ApiResponse<List<MediaPlanDTO>>> getByEmploye(@PathVariable Long employeId) {
+        return ResponseEntity.ok(ApiResponse.ok(mediaPlanService.findByAssignedEmploye(employeId)));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> create(@RequestBody MediaPlanRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok("Media plan créé", mediaPlanService.create(request)));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<ApiResponse<List<MediaPlanDTO>>> createBulk(@RequestBody List<MediaPlanRequest> requests) {
+        return ResponseEntity.ok(ApiResponse.ok("Media plans créés", mediaPlanService.createBulk(requests)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> update(@PathVariable Long id,
+            @RequestBody MediaPlanRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok("Media plan mis à jour", mediaPlanService.update(id, request)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        mediaPlanService.delete(id);
+        return ResponseEntity.ok(ApiResponse.ok("Media plan supprimé", null));
+    }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> approve(@PathVariable Long id,
+            @RequestParam Long managerId) {
+        return ResponseEntity.ok(ApiResponse.ok("Media plan approuvé", mediaPlanService.approve(id, managerId)));
+    }
+
+    @PatchMapping("/{id}/disapprove")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> disapprove(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok("Media plan désapprouvé", mediaPlanService.disapprove(id)));
+    }
+
+    @PatchMapping("/{id}/resubmit")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> resubmit(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok("Media plan renvoyé", mediaPlanService.resubmit(id)));
+    }
+
+    @PatchMapping("/{id}/request-client-validation")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> requestClientValidation(@PathVariable Long id) {
+        return ResponseEntity
+                .ok(ApiResponse.ok("En attente de validation client", mediaPlanService.requestClientValidation(id)));
+    }
+
+    @PatchMapping("/{id}/client-approve")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> clientApprove(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok("Approuvé par le client", mediaPlanService.clientApprove(id)));
+    }
+
+    @PostMapping("/client-approve-all")
+    public ResponseEntity<ApiResponse<List<MediaPlanDTO>>> clientApproveAll(@RequestBody List<Long> ids) {
+        return ResponseEntity
+                .ok(ApiResponse.ok("Batch approuvé par le client", mediaPlanService.clientApproveAll(ids)));
+    }
+
+    @PatchMapping("/{id}/client-disapprove")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> clientDisapprove(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok("Désapprouvé par le client", mediaPlanService.clientDisapprove(id)));
+    }
+
+    @PatchMapping("/{id}/rectifs")
+    public ResponseEntity<ApiResponse<MediaPlanDTO>> updateRectifs(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body) {
+        return ResponseEntity.ok(ApiResponse.ok("Rectifs mis à jour",
+                mediaPlanService.updateRectifs(id, body.get("rectifs"))));
+    }
+
+    // ── Google Drive Auth ────────────────────────────────────────────────────
+    @GetMapping("/google-drive/auth-url")
+    public ResponseEntity<ApiResponse<String>> getGoogleAuthUrl() throws java.io.IOException {
+        return ResponseEntity.ok(ApiResponse.ok(mediaPlanService.getGoogleAuthUrl()));
+    }
+
+    @GetMapping("/google-drive/callback")
+    public ResponseEntity<String> googleCallback(@RequestParam("code") String code) throws java.io.IOException {
+        mediaPlanService.storeGoogleToken(code);
+        return ResponseEntity.ok("Autorisation Google Drive réussie ! Vous pouvez fermer cet onglet.");
+    }
+
+    @GetMapping("/google-drive/status")
+    public ResponseEntity<ApiResponse<Boolean>> getGoogleAuthStatus() {
+        return ResponseEntity.ok(ApiResponse.ok(mediaPlanService.isGoogleAuthorized()));
+    }
+}

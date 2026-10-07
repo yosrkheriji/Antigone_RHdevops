@@ -1,0 +1,47 @@
+% Packages nécessaires : \usepackage{longtable}, \usepackage{multirow}, \usepackage{array}
+% Sous-ensemble du backlog produit (backlog_antigone_rh.tex) affecté au Sprint 2.
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du Sprint 2 -- Gestion des employés \& Notifications} \label{tab:backlog-sprint-2} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{9}{*}{M4} & \multirow{9}{*}{Gestion des employés} & M4.1 & En tant qu'administrateur RH, je souhaite ajouter un employé. & Moyenne \\
+\cline{3-5}
+ & & M4.2 & En tant qu'administrateur RH, je souhaite modifier la fiche d'un employé. & Moyenne \\
+\cline{3-5}
+ & & M4.3 & En tant qu'administrateur RH, je souhaite archiver ou désarchiver un employé. & Faible \\
+\cline{3-5}
+ & & M4.4 & En tant qu'administrateur RH, je souhaite consulter l'organigramme de l'entreprise. & Moyenne \\
+\cline{3-5}
+ & & M4.5 & En tant qu'administrateur RH, je souhaite rechercher et filtrer les employés. & Faible \\
+\cline{3-5}
+ & & M4.6 & En tant qu'administrateur RH, je souhaite exporter la liste des employés en CSV. & Faible \\
+\cline{3-5}
+ & & M4.7 & En tant qu'administrateur RH, je souhaite gérer les compétences d'un employé. & Moyenne \\
+\cline{3-5}
+ & & M4.8 & En tant qu'administrateur RH, je souhaite gérer les documents d'un employé avec suivi d'expiration. & Moyenne \\
+\cline{3-5}
+ & & M4.9 & En tant qu'administrateur RH, je souhaite gérer les tâches obligatoires assignées à un employé. & Moyenne \\
+\hline
+\multirow{3}{*}{M11} & \multirow{3}{*}{Notifications} & M11.1 & En tant qu'utilisateur, je souhaite consulter mes notifications. & Faible \\
+\cline{3-5}
+ & & M11.2 & En tant qu'utilisateur, je souhaite consulter le nombre de notifications non lues. & Faible \\
+\cline{3-5}
+ & & M11.3 & En tant qu'utilisateur, je souhaite marquer mes notifications comme lues. & Faible \\
+\hline
+\end{longtable}

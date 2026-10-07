@@ -1,0 +1,72 @@
+@startuml 01_employe
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #F3F8FF
+  BorderColor #333333
+  ArrowColor #333333
+  FontSize 12
+}
+skinparam actor {
+  BorderColor #333333
+  FontSize 12
+}
+skinparam ArrowColor #333333
+
+title Espace Employe
+
+actor "Employe" as Employe
+actor "Service de messagerie" as Messagerie <<systeme>>
+actor "Agent de presence\n(Agent Desktop)" as AgentPresence <<systeme>>
+actor "Assistant conversationnel\n(Chatbot IA)" as Chatbot <<systeme>>
+
+usecase "S'authentifier et gerer\nson compte" as UC_Auth
+usecase "Se connecter" as UC_Login
+usecase "Modifier le mot de passe" as UC_ChangePwd
+usecase "Modifier ses informations\npersonnelles" as UC_EditProfile
+UC_Auth ..> UC_Login : <<include>>
+UC_Auth ..> UC_ChangePwd : <<include>>
+UC_Auth ..> UC_EditProfile : <<include>>
+
+usecase "Soumettre et suivre\nses demandes RH" as UC_MesDemandes
+usecase "Soumettre une demande\n(conge / autorisation / teletravail)" as UC_Soumettre
+usecase "Consulter le statut\nd'une demande" as UC_StatutDemande
+usecase "Annuler une demande" as UC_AnnulerDemande
+UC_MesDemandes ..> UC_Soumettre : <<include>>
+UC_MesDemandes ..> UC_StatutDemande : <<include>>
+UC_MesDemandes ..> UC_AnnulerDemande : <<include>>
+
+usecase "Gerer le pointage\n(entree / sortie)" as UC_Pointage
+usecase "Pointer l'entree" as UC_PointerEntree
+usecase "Pointer la sortie" as UC_PointerSortie
+usecase "Consulter l'historique\nde pointage" as UC_HistoPointage
+UC_Pointage ..> UC_PointerEntree : <<include>>
+UC_Pointage ..> UC_PointerSortie : <<include>>
+UC_Pointage ..> UC_HistoPointage : <<include>>
+
+usecase "Obtenir une assistance\nRH avec l'IA" as UC_IA
+usecase "Poser une question" as UC_PoserQuestion
+usecase "Consulter les reponses\nsuggerees" as UC_ReponsesIA
+usecase "Consulter l'historique\ndes echanges" as UC_HistoIA
+UC_IA ..> UC_PoserQuestion : <<include>>
+UC_IA ..> UC_ReponsesIA : <<include>>
+UC_IA ..> UC_HistoIA : <<include>>
+
+usecase "Suivre ses taches et\nmedia plans assignes" as UC_MesTaches
+usecase "Consulter un Media Plan" as UC_ConsulterMP
+usecase "Mettre a jour le statut\nd'une tache" as UC_MajTache
+UC_MesTaches ..> UC_ConsulterMP : <<include>>
+UC_MesTaches ..> UC_MajTache : <<include>>
+
+Employe -- UC_Auth
+Employe -- UC_MesDemandes
+Employe -- UC_Pointage
+Employe -- UC_IA
+Employe -- UC_MesTaches
+
+Messagerie    -- UC_Auth
+AgentPresence -- UC_Pointage
+Chatbot       -- UC_IA
+
+@enduml

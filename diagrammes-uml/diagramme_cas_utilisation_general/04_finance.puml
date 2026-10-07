@@ -1,0 +1,60 @@
+@startuml 04_finance
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #FFF3F3
+  BorderColor #333333
+  ArrowColor #333333
+  FontSize 12
+}
+skinparam actor {
+  BorderColor #333333
+  FontSize 12
+}
+skinparam ArrowColor #333333
+
+title Espace Responsable Finance
+
+actor "Responsable Finance" as Finance
+
+usecase "Gerer la facturation\net les devis" as UC_Facturation
+usecase "Creer un devis" as UC_CreerDevis
+usecase "Generer une facture" as UC_GenererFacture
+usecase "Suivre les paiements" as UC_SuivrePaiements
+usecase "Relancer un impaye" as UC_RelancerImpaye
+UC_Facturation ..> UC_CreerDevis : <<include>>
+UC_Facturation ..> UC_GenererFacture : <<include>>
+UC_Facturation ..> UC_SuivrePaiements : <<include>>
+UC_Facturation ..> UC_RelancerImpaye : <<include>>
+
+usecase "Gerer la paie,\ncharges et dettes" as UC_Paie
+usecase "Generer les bulletins\nde paie" as UC_BulletinsPaie
+usecase "Suivre les charges\nde l'agence" as UC_SuivreCharges
+usecase "Suivre les dettes\net echeanciers" as UC_SuivreDettes
+UC_Paie ..> UC_BulletinsPaie : <<include>>
+UC_Paie ..> UC_SuivreCharges : <<include>>
+UC_Paie ..> UC_SuivreDettes : <<include>>
+
+usecase "Gerer les declarations\nCNSS et TVA" as UC_Declarations
+usecase "Verifier les cotisations" as UC_VerifCotisations
+usecase "Soumettre la declaration\nCNSS trimestrielle" as UC_SoumettreCNSS
+usecase "Consulter la declaration\nTVA mensuelle" as UC_TVA
+UC_Declarations ..> UC_VerifCotisations : <<include>>
+UC_Declarations ..> UC_SoumettreCNSS : <<include>>
+UC_Declarations ..> UC_TVA : <<include>>
+
+usecase "Consulter le tableau\nde bord financier" as UC_DashboardFinance
+usecase "Consulter les indicateurs\nfinanciers" as UC_IndicateursFinance
+usecase "Filtrer par periode" as UC_FiltrerPeriode
+usecase "Exporter un rapport\nfinancier" as UC_ExporterFinance
+UC_DashboardFinance ..> UC_IndicateursFinance : <<include>>
+UC_DashboardFinance ..> UC_FiltrerPeriode : <<include>>
+UC_DashboardFinance ..> UC_ExporterFinance : <<include>>
+
+Finance -- UC_Facturation
+Finance -- UC_Paie
+Finance -- UC_Declarations
+Finance -- UC_DashboardFinance
+
+@enduml

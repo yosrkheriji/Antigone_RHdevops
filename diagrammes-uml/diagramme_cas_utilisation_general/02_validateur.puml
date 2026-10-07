@@ -1,0 +1,39 @@
+@startuml 02_validateur
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #F3FFF5
+  BorderColor #333333
+  ArrowColor #333333
+  FontSize 12
+}
+skinparam actor {
+  BorderColor #333333
+  FontSize 12
+}
+skinparam ArrowColor #333333
+
+title Espace Responsable hierarchique / Validateur
+
+actor "Responsable hierarchique\n/ Validateur" as Validateur
+
+usecase "Gerer les demandes RH\net validations" as UC_GererDemandes
+usecase "Consulter les demandes\nde son equipe" as UC_ConsulterDemandes
+usecase "Valider une demande" as UC_Valider
+usecase "Refuser une demande" as UC_Refuser
+usecase "Saisir un motif\nde refus" as UC_MotifRefus
+UC_GererDemandes ..> UC_ConsulterDemandes : <<include>>
+UC_GererDemandes ..> UC_Valider : <<include>>
+UC_GererDemandes ..> UC_Refuser : <<include>>
+UC_Refuser ..> UC_MotifRefus : <<include>>
+
+Validateur -- UC_GererDemandes
+
+note bottom of Validateur
+  Un employe investi d'un role de validation :
+  herite de tous les cas d'utilisation Employe
+  (voir panneau "Espace Employe").
+end note
+
+@enduml

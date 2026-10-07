@@ -1,0 +1,22 @@
+{
+  "name": "rh-application-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "frontend-projects",
+    "frontend-rh",
+    "frontend-finance"
+  ],
+  "scripts": {
+    "dev:projects": "npm run dev -w frontend-projects",
+    "dev:rh": "npm run dev -w frontend-rh",
+    "dev:finance": "npm run dev -w frontend-finance",
+    "build:projects": "npm run build -w frontend-projects",
+    "build:rh": "npm run build -w frontend-rh",
+    "build:finance": "npm run build -w frontend-finance",
+    "build:all": "npm run build:projects && npm run build:rh && npm run build:finance",
+    "test:widget": "npm run test -w @antigone/ai-chat-widget",
+    "typecheck:widget": "npm run typecheck -w @antigone/ai-chat-widget",
+    "test:e2e": "npm run test:e2e -w @antigone/ai-chat-widget"
+  }
+}

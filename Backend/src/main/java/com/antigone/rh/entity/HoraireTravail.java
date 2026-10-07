@@ -1,0 +1,42 @@
+package com.antigone.rh.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+@Entity
+@Table(name = "horaires_travail")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class HoraireTravail {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String nom;
+
+    @Column(nullable = false)
+    private LocalTime heureDebut;
+
+    @Column(nullable = false)
+    private LocalTime heureFin;
+
+    private LocalTime pauseDebutMidi;
+
+    private LocalTime pauseFinMidi;
+
+    @Column(nullable = false)
+    private String joursTravail; // Comma-separated: "LUNDI,MARDI,MERCREDI,JEUDI,VENDREDI"
+
+    private String joursTeletravail; // Comma-separated: "LUNDI,VENDREDI" (nullable)
+
+    private LocalDate dateDebut; // Applicable from (inclusive)
+
+    private LocalDate dateFin;   // Applicable until (inclusive)
+}

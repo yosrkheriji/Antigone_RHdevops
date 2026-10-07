@@ -1,0 +1,83 @@
+% Packages nécessaires : \usepackage{longtable}, \usepackage{multirow}, \usepackage{array}
+% Sous-ensemble du backlog produit (backlog_antigone_rh.tex) affecté au Sprint 3.
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du Sprint 3 -- Demandes RH \& Pilotage} \label{tab:backlog-sprint-3} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{8}{*}{M5} & \multirow{8}{*}{Demandes RH} & M5.1 & En tant qu'employé, je souhaite soumettre une demande de congé. & Moyenne \\
+\cline{3-5}
+ & & M5.2 & En tant qu'employé, je souhaite soumettre une demande d'autorisation. & Faible \\
+\cline{3-5}
+ & & M5.3 & En tant qu'employé, je souhaite soumettre une demande de télétravail. & Faible \\
+\cline{3-5}
+ & & M5.4 & En tant qu'employé, je souhaite joindre un justificatif à une demande. & Faible \\
+\cline{3-5}
+ & & M5.5 & En tant qu'employé, je souhaite annuler une demande soumise. & Faible \\
+\cline{3-5}
+ & & M5.6 & En tant qu'employé, je souhaite consulter l'historique de mes demandes. & Faible \\
+\cline{3-5}
+ & & M5.7 & En tant qu'employé, je souhaite soumettre une demande papier hors ligne. & Moyenne \\
+\cline{3-5}
+ & & M5.8 & En tant qu'employé, je souhaite consulter le calcul automatique du nombre de jours demandés. & Moyenne \\
+\hline
+\multirow{5}{*}{M6} & \multirow{5}{*}{Validation des demandes} & M6.1 & En tant que validateur, je souhaite consulter les demandes en attente de validation. & Faible \\
+\cline{3-5}
+ & & M6.2 & En tant que validateur, je souhaite approuver une demande. & Moyenne \\
+\cline{3-5}
+ & & M6.3 & En tant que validateur, je souhaite refuser une demande avec motif. & Moyenne \\
+\cline{3-5}
+ & & M6.4 & En tant que validateur, je souhaite valider ou refuser plusieurs demandes en lot. & Élevée \\
+\cline{3-5}
+ & & M6.5 & En tant que validateur, je souhaite consulter l'historique de validation d'une demande. & Moyenne \\
+\hline
+\multirow{5}{*}{M7} & \multirow{5}{*}{Calendrier \& Horaires} & M7.1 & En tant qu'employé, je souhaite consulter le calendrier de l'entreprise. & Faible \\
+\cline{3-5}
+ & & M7.2 & En tant qu'administrateur, je souhaite gérer les jours fériés et types de jours. & Moyenne \\
+\cline{3-5}
+ & & M7.3 & En tant qu'administrateur, je souhaite définir les horaires de travail. & Moyenne \\
+\cline{3-5}
+ & & M7.4 & En tant qu'administrateur, je souhaite définir des restrictions de congés par période. & Élevée \\
+\cline{3-5}
+ & & M7.5 & En tant qu'administrateur RH, je souhaite consulter les employés en congé aujourd'hui. & Faible \\
+\hline
+\multirow{5}{*}{M9} & \multirow{5}{*}{Suivi \& Monitoring} & M9.1 & En tant que système, je souhaite enregistrer automatiquement les heures via l'agent de bureau. & Élevée \\
+\cline{3-5}
+ & & M9.2 & En tant qu'administrateur, je souhaite consulter le suivi temps réel des présences. & Moyenne \\
+\cline{3-5}
+ & & M9.3 & En tant qu'administrateur, je souhaite générer un rapport d'inactivité. & Élevée \\
+\cline{3-5}
+ & & M9.4 & En tant qu'administrateur, je souhaite statuer sur un rapport d'inactivité. & Moyenne \\
+\cline{3-5}
+ & & M9.5 & En tant qu'administrateur, je souhaite consulter l'historique de connexion d'un employé. & Moyenne \\
+\hline
+\multirow{4}{*}{M10} & \multirow{4}{*}{Référentiels} & M10.1 & En tant qu'administrateur, je souhaite ajouter une valeur de référentiel. & Faible \\
+\cline{3-5}
+ & & M10.2 & En tant qu'administrateur, je souhaite modifier une valeur de référentiel. & Faible \\
+\cline{3-5}
+ & & M10.3 & En tant qu'administrateur, je souhaite activer ou désactiver une valeur de référentiel. & Faible \\
+\cline{3-5}
+ & & M10.4 & En tant qu'utilisateur, je souhaite consulter les référentiels par type. & Faible \\
+\hline
+\multirow{3}{*}{M21} & \multirow{3}{*}{Tableau de bord Admin} & M21.1 & En tant qu'administrateur, je souhaite consulter le tableau de bord global. & Moyenne \\
+\cline{3-5}
+ & & M21.2 & En tant qu'administrateur, je souhaite consulter les alertes du tableau de bord. & Moyenne \\
+\cline{3-5}
+ & & M21.3 & En tant qu'administrateur, je souhaite consulter le détail d'un projet depuis le tableau de bord. & Faible \\
+\hline
+\end{longtable}

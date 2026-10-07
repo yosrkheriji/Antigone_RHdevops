@@ -1,0 +1,46 @@
+services:
+  - type: web
+    name: antigone-rh-backend
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./Backend/Dockerfile
+    dockerContext: ./Backend
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY_B64
+        sync: false
+      - key: GOOGLE_DRIVE_VIEWER_KEY_B64
+        sync: false
+      - key: GOOGLE_DRIVE_PARENT_FOLDER_ID
+        sync: false
+      # Assistant IA — sans cette cle, /api/v1/** repond 503 et le reste tourne.
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_CHAT_MODEL
+        value: gpt-4o
+      - key: OPENAI_EMBEDDING_MODEL
+        value: text-embedding-3-small
+
+databases:
+  - name: antigone-rh-db
+    plan: free
+    databaseName: antigone_rh
+    postgresMajorVersion: 16

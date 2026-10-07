@@ -1,0 +1,28 @@
+@startuml 04_referentiels
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #F7F3FF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Referentiels"
+
+class Referentiel {
+  libelle
+  valeur
+  typeReferentiel
+  actif
+}
+
+note bottom of Referentiel
+  Source de valeurs parametrables utilisee
+  par la quasi-totalite des modules
+  (postes, departements, types de conge,
+  formats media plan, categories de charge...).
+  Parametree par l'Administrateur.
+end note
+
+@enduml

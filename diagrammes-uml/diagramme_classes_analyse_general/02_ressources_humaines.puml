@@ -1,0 +1,91 @@
+@startuml 02_ressources_humaines
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #F3FFF5
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Ressources Humaines"
+
+class Employe #F3F8FF {
+  matricule
+  nom / prenom
+}
+
+class Demande {
+  type
+  dateCreation
+  statut
+  raison
+  motifRefus
+}
+
+class Conge {
+  typeConge
+  dateDebut
+  dateFin
+  nombreJours
+  joursOuvrables
+  justificatifPath
+}
+
+class Autorisation {
+  date
+  heureDebut
+  heureFin
+}
+
+class Teletravail {
+  dateDebut
+  dateFin
+}
+
+class Validation {
+  ordre
+  decision
+  dateValidation
+  commentaire
+}
+
+class HistoriqueStatut {
+  ancienStatut
+  nouveauStatut
+  dateChangement
+}
+
+class Notification {
+  titre
+  message
+  lu
+  urgent
+  dateCreation
+}
+
+class DocumentEmploye {
+  nom
+  type
+  fichierUrl
+  dateExpiration
+}
+
+Demande <|-- Conge
+Demande <|-- Autorisation
+Demande <|-- Teletravail
+Employe "1" *-- "0..*" Demande : soumet
+Demande "1" *-- "0..*" Validation : suit
+Demande "1" *-- "0..*" HistoriqueStatut : trace
+Employe "1" -- "0..*" Validation : valide >
+Employe "1" -- "0..*" Notification : recoit
+Demande "0..1" -- "0..*" Notification : declenche
+Employe "1" *-- "0..*" DocumentEmploye : possede
+
+note bottom of DocumentEmploye
+  Contrats, attestations, certificats,
+  diplomes : justificatifs de conge (Conge)
+  suivent le meme principe de piece jointe.
+end note
+
+@enduml

@@ -1,0 +1,69 @@
+% Packages nécessaires : \usepackage{longtable}, \usepackage{multirow}, \usepackage{array}
+% Sous-ensemble du backlog produit (backlog_antigone_rh.tex) affecté au Sprint 1.
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du Sprint 1 -- Authentification, Utilisateurs \& Rôles, Clients} \label{tab:backlog-sprint-1} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{7}{*}{M1} & \multirow{7}{*}{Authentification} & M1.1 & En tant qu'utilisateur, je souhaite me connecter à la plateforme. & Moyenne \\
+\cline{3-5}
+ & & M1.2 & En tant qu'utilisateur, je souhaite réinitialiser mon mot de passe. & Moyenne \\
+\cline{3-5}
+ & & M1.3 & En tant qu'utilisateur, je souhaite me déconnecter du système. & Faible \\
+\cline{3-5}
+ & & M1.4 & En tant qu'administrateur, je souhaite gérer les accès utilisateurs. & Moyenne \\
+\cline{3-5}
+ & & M1.5 & En tant qu'utilisateur, je souhaite modifier son mot de passe. & Faible \\
+\cline{3-5}
+ & & M1.6 & En tant qu'utilisateur, je souhaite consulter son profil. & Faible \\
+\cline{3-5}
+ & & M1.7 & En tant qu'utilisateur, je souhaite modifier ses informations personnelles. & Moyenne \\
+\hline
+\multirow{8}{*}{M2} & \multirow{8}{*}{Gestion des utilisateurs et des rôles} & M2.1 & En tant qu'administrateur, je souhaite ajouter un utilisateur. & Moyenne \\
+\cline{3-5}
+ & & M2.2 & En tant qu'administrateur, je souhaite modifier un utilisateur. & Moyenne \\
+\cline{3-5}
+ & & M2.3 & En tant qu'administrateur, je souhaite supprimer un utilisateur. & Moyenne \\
+\cline{3-5}
+ & & M2.4 & En tant qu'administrateur, je souhaite attribuer un rôle à un utilisateur. & Élevée \\
+\cline{3-5}
+ & & M2.5 & En tant qu'administrateur, je souhaite consulter la liste des utilisateurs. & Faible \\
+\cline{3-5}
+ & & M2.6 & En tant qu'administrateur, je souhaite créer un rôle et lui associer des permissions. & Moyenne \\
+\cline{3-5}
+ & & M2.7 & En tant qu'administrateur, je souhaite modifier les permissions d'un rôle existant. & Moyenne \\
+\cline{3-5}
+ & & M2.8 & En tant qu'administrateur, je souhaite supprimer un rôle. & Faible \\
+\hline
+\multirow{8}{*}{M3} & \multirow{8}{*}{Gestion des clients} & M3.1 & En tant que coordinateur, je souhaite ajouter un client. & Moyenne \\
+\cline{3-5}
+ & & M3.2 & En tant que coordinateur, je souhaite modifier les informations d'un client. & Moyenne \\
+\cline{3-5}
+ & & M3.3 & En tant que coordinateur, je souhaite supprimer un client. & Faible \\
+\cline{3-5}
+ & & M3.4 & En tant que coordinateur, je souhaite consulter la liste des clients. & Faible \\
+\cline{3-5}
+ & & M3.5 & En tant que coordinateur, je souhaite ajouter un contact pour un client. & Faible \\
+\cline{3-5}
+ & & M3.6 & En tant que coordinateur, je souhaite associer un dossier Google Drive à un client. & Élevée \\
+\cline{3-5}
+ & & M3.7 & En tant que coordinateur, je souhaite consulter les fichiers Drive d'un client. & Moyenne \\
+\cline{3-5}
+ & & M3.8 & En tant que client, je souhaite me connecter à mon portail dédié. & Moyenne \\
+\hline
+\end{longtable}

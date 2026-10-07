@@ -1,0 +1,45 @@
+% Packages nécessaires dans le préambule du document :
+% \usepackage{longtable}
+% \usepackage{array}
+% Répartition en 6 sprints. Charge calculée à partir de la colonne Complexité du backlog produit
+% (backlog_antigone_rh.tex) : Faible=1, Moyenne=2, Élevée=3 point(s).
+% Chaque sprint correspond à un chapitre du rapport (III à VIII).
+
+{\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\centering\arraybackslash}p{1.6cm}|p{4.2cm}|p{6.4cm}|>{\centering\arraybackslash}p{1.7cm}|}
+\caption{Planification des sprints -- Antigone RH} \label{tab:sprints-antigone-rh} \\
+\hline
+\textbf{Sprint} & \textbf{Modules développés} & \textbf{Objectif du sprint} & \textbf{Charge (pts)} \\
+\hline
+\endfirsthead
+
+\multicolumn{4}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{Sprint} & \textbf{Modules développés} & \textbf{Objectif du sprint} & \textbf{Charge (pts)} \\
+\hline
+\endhead
+
+\hline \multicolumn{4}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\textbf{Sprint 1} & M1 -- Authentification\newline M2 -- Gestion des utilisateurs et des rôles\newline M3 -- Gestion des clients & Fondations : authentification sécurisée, gestion des comptes utilisateurs, des rôles/permissions (RBAC) et des clients & 40 \\
+\hline
+\textbf{Sprint 2} & M4 -- Gestion des employés\newline M11 -- Notifications & Gestion des fiches employés et des notifications applicatives & 18 \\
+\hline
+\textbf{Sprint 3} & M5 -- Demandes RH\newline M6 -- Validation des demandes\newline M7 -- Calendrier \& Horaires\newline M9 -- Suivi \& Monitoring\newline M10 -- Référentiels\newline M21 -- Tableau de bord Admin & Processus RH : demandes (congé, autorisation, télétravail), circuit de validation, calendrier \& horaires, suivi des présences et pilotage RH & 51 \\
+\hline
+\textbf{Sprint 4} & M8 -- Réunions\newline M12 -- Gestion des projets\newline M13 -- Gestion des tâches\newline M14 -- Calendrier de production\newline M15 -- Media Plan & Gestion opérationnelle des projets : équipes, tâches, réunions, planification des tournages et plans médias & 53 \\
+\hline
+\textbf{Sprint 5} & M16 -- Finance - Facturation\newline M17 -- Finance - Paie\newline M18 -- Finance - Charges \& Dettes\newline M19 -- Finance - CNSS \& TVA & Module financier : facturation, paie, charges/dettes et déclarations CNSS/TVA & 43 \\
+\hline
+\textbf{Sprint 6} & M20 -- Assistant IA & Assistant IA transverse (chat, explication de bulletin de paie, génération de media plan, relances client, réindexation de la base de connaissances) & 16 \\
+\hline
+\multicolumn{3}{|r|}{\textbf{Total}} & \textbf{221} \\
+\hline
+\end{longtable}
+}

@@ -1,0 +1,492 @@
+@startuml Diagramme_Classes_Analyse_General
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+package "Securite et Comptes" {
+  class Employe {
+    matricule
+    cin
+    nom
+    prenom
+    email
+    telephone
+    dateEmbauche
+    soldeConge
+    poste
+    departement
+    typeContrat
+    genre
+  }
+
+  class Compte {
+    username
+    passwordHash
+    enabled
+    mustChangePassword
+    lastLogin
+  }
+
+  class Role {
+    nom
+  }
+
+  class Permission {
+    permission
+  }
+
+  Employe "1" *-- "0..1" Compte : possede
+  Compte  "0..*" -- "0..*" Role : est attribue
+  Role    "0..*" -- "0..*" Permission : regroupe
+  Employe "1" -- "0..*" Employe : encadre >
+
+  note bottom of Compte
+    AccessLog (journal des connexions par compte)
+    est un detail d'implementation : non represente
+    a ce niveau d'analyse.
+  end note
+}
+
+package "Ressources Humaines" {
+  class Demande {
+    type
+    dateCreation
+    statut
+    raison
+    motifRefus
+  }
+
+  class Conge {
+    typeConge
+    dateDebut
+    dateFin
+    nombreJours
+    joursOuvrables
+    justificatifPath
+  }
+
+  class Autorisation {
+    date
+    heureDebut
+    heureFin
+  }
+
+  class Teletravail {
+    dateDebut
+    dateFin
+  }
+
+  class Validation {
+    ordre
+    decision
+    dateValidation
+    commentaire
+  }
+
+  class HistoriqueStatut {
+    ancienStatut
+    nouveauStatut
+    dateChangement
+  }
+
+  class Notification {
+    titre
+    message
+    lu
+    urgent
+    dateCreation
+  }
+
+  class DocumentEmploye {
+    nom
+    type
+    fichierUrl
+    dateExpiration
+  }
+
+  Demande <|-- Conge
+  Demande <|-- Autorisation
+  Demande <|-- Teletravail
+  Employe "1" *-- "0..*" Demande : soumet
+  Demande "1" *-- "0..*" Validation : suit
+  Demande "1" *-- "0..*" HistoriqueStatut : trace
+  Employe "1" -- "0..*" Validation : valide >
+  Employe "1" -- "0..*" Notification : recoit
+  Demande "0..1" -- "0..*" Notification : declenche
+  Employe "1" *-- "0..*" DocumentEmploye : possede
+
+  note bottom of DocumentEmploye
+    Contrats, attestations, certificats, diplomes :
+    les justificatifs de conge (Conge) suivent le
+    meme principe de piece jointe.
+  end note
+}
+
+package "Presence et Calendrier" {
+  class Pointage {
+    datePointage
+    heureEntree
+    heureSortie
+    statut
+    surReseauEntreprise
+  }
+
+  class HoraireTravail {
+    nom
+    heureDebut
+    heureFin
+    joursTravail
+    joursTeletravail
+  }
+
+  class AffectationHoraire {
+    dateDebut
+    dateFin
+  }
+
+  class Calendrier {
+    dateJour
+    nomJour
+    typeJour
+    origine
+  }
+
+  class PeriodeBloquee {
+    dateDebut
+    dateFin
+    nbMinEmployes
+    raison
+  }
+
+  class RapportInactivite {
+    periode
+    dureeInactivite
+    motif
+  }
+
+  Employe "1" -- "0..*" Pointage : pointe
+  Employe "1" *-- "0..*" AffectationHoraire : historique
+  AffectationHoraire "0..*" -- "1" HoraireTravail : applique
+  Employe "1" -- "0..*" PeriodeBloquee : cree
+  Employe "1" -- "0..*" RapportInactivite : concerne
+
+  note bottom of Pointage
+    Alimente automatiquement par l'agent de presence
+    (heartbeat reseau) : le signal brut (Heartbeat)
+    est un detail technique, non represente ici.
+  end note
+
+  note bottom of AffectationHoraire
+    Materialise l'historique des horaires d'un
+    employe dans le temps (standard, ete,
+    teletravail impose...), plutot qu'un simple
+    horaire courant.
+  end note
+}
+
+package "Referentiels" {
+  class Referentiel {
+    libelle
+    valeur
+    typeReferentiel
+    actif
+  }
+
+  note bottom of Referentiel
+    Source de valeurs parametrables utilisee par la
+    quasi-totalite des modules (postes, departements,
+    types de conge, formats media plan, categories de
+    charge...). Parametree par l'Administrateur.
+  end note
+}
+
+package "Projets et Production" {
+  class Projet {
+    nom
+    statut
+    typeProjet
+    dateDebut
+    dateFin
+    description
+  }
+
+  class Tache {
+    titre
+    statut
+    dateEcheance
+    urgente
+    description
+  }
+
+  class TacheObligatoire {
+    nom
+    dates
+  }
+
+  class Equipe {
+    nom
+  }
+
+  class Competence {
+    nom
+    categorie
+    niveau
+  }
+
+  class Client {
+    nom
+    email
+    telephone
+    matriculeFiscale
+    loginClient
+  }
+
+  class ContactClient {
+    nom
+    poste
+    email
+    telephone
+  }
+
+  class Reunion {
+    titre
+    dateReunion
+    heureDebut
+    heureFin
+    typeReunion
+    statut
+  }
+
+  class CalendrierProjet {
+    dateSlot
+    type
+    statut
+    typeDeContenu
+    urgent
+  }
+
+  Client "1" *-- "0..*" ContactClient : possede
+  Client "1" -- "0..*" Projet : commande
+  Employe "1" -- "0..*" Projet : dirige >
+  Employe "0..*" -- "0..*" Projet : participe
+  Projet "1" *-- "0..*" Tache : contient
+  Projet "1" *-- "0..*" Equipe : organise
+  Equipe "0..*" -- "0..*" Employe : regroupe
+  Tache "0..*" -- "0..1" Employe : est assignee a
+  Employe "1" *-- "0..*" Competence : maitrise
+  Equipe "0..1" -- "0..*" TacheObligatoire : concerne
+  Employe "0..1" -- "0..*" TacheObligatoire : concerne
+  Employe "1" -- "0..*" Reunion : organise
+  Employe "0..*" -- "0..*" Reunion : participe
+  Client "0..1" -- "0..*" Reunion : participe
+  CalendrierProjet "0..*" -- "1" Employe : planifie par
+
+  note bottom of Competence
+    Support du besoin "Suivre les competences
+    mobilisees par equipe" (Chef de Projet).
+  end note
+
+  note bottom of TacheObligatoire
+    Obligation recurrente (dates multiples), rattachee
+    a une equipe ou a un employe precis -- distincte
+    des Tache d'un Projet.
+  end note
+}
+
+package "Media Plan (Reseaux Sociaux)" {
+  class MediaPlan {
+    datePublication
+    titre
+    format
+    type
+    platforme
+    statut
+    etatPublication
+    lienDrive
+  }
+
+  class MediaPlanComment {
+    columnKey
+    content
+    createdAt
+  }
+
+  class ReactifIntern {
+    type
+    contenu
+    dateReactif
+    nombreFois
+  }
+
+  class Assignation <<association class>> {
+    dateAssignment
+  }
+
+  Client "1" *-- "0..*" MediaPlan : concerne
+  Employe "1" -- "0..*" MediaPlan : cree
+  Employe "0..*" -- "0..*" Client : est assigne a
+  (Employe, Client) .. Assignation
+  MediaPlan "1" *-- "0..*" MediaPlanComment : recoit
+  Employe "1" -- "0..*" MediaPlanComment : redige
+  MediaPlan "0..1" -- "0..1" CalendrierProjet : correspond a
+  Tache "0..1" -- "0..*" ReactifIntern : recoit
+  MediaPlan "0..1" -- "0..*" ReactifIntern : recoit
+  Employe "1" -- "0..*" ReactifIntern : redige
+
+  note bottom of MediaPlan
+    lienDrive : integration Google Drive pour les
+    livrables du client (acteur secondaire "Google
+    Drive" du diagramme de cas d'utilisation).
+  end note
+}
+
+package "Finance" {
+  class Facture {
+    numero
+    type
+    dateEmission
+    totalHt
+    totalTtc
+    montantPaye
+    statut
+  }
+
+  class LigneDocument {
+    designation
+    quantite
+    prixUnitaire
+    selectionnee
+  }
+
+  class ServiceCatalogue {
+    designation
+    prixDefaut
+    categorie
+    actif
+  }
+
+  class PaiementFacture {
+    montant
+    datePaiement
+  }
+
+  class RelanceClient {
+    dateRelance
+    envoyee
+    ton
+    dateEnvoi
+  }
+
+  class BulletinPaie {
+    mois
+    salaireBrut
+    cnssSalarie
+    irppMensuel
+    net
+    netAPayer
+  }
+
+  class AcompteSalaire {
+    mois
+    montant
+    date
+  }
+
+  class ChargeFixe {
+    label
+    montant
+    tauxTva
+    jourEcheance
+  }
+
+  class PaiementChargeFixe {
+    montant
+    datePaiement
+  }
+
+  class ChargeVariable {
+    mois
+    label
+    montant
+    categorie
+  }
+
+  class Dette {
+    label
+    creancier
+    montantTotal
+    montantPaye
+  }
+
+  class DettePaiement {
+    montant
+    datePaiement
+  }
+
+  class AutreRevenu {
+    mois
+    label
+    montant
+    categorie
+  }
+
+  class DeclarationCnss {
+    annee
+    trimestre
+    montantSalarie
+    montantEmployeur
+    montantPenalite
+    statut
+  }
+
+  class ParametresPaie {
+    cnssSalarie
+    cnssPatronale
+    tfp
+    foprolos
+    abattement
+  }
+
+  class BaremeIrpp {
+    effectiveFrom
+    tranches
+    notes
+  }
+
+  Client "1" -- "0..*" Facture : recoit
+  Facture "1" *-- "0..*" LigneDocument : contient
+  Facture "1" *-- "0..*" PaiementFacture : encaisse
+  Facture "1" -- "0..*" RelanceClient : declenche
+  ServiceCatalogue ..> LigneDocument : prefigure
+  Employe "1" -- "0..*" BulletinPaie : percoit
+  Employe "1" -- "0..*" AcompteSalaire : demande
+  ChargeFixe "1" *-- "0..*" PaiementChargeFixe : est reglee par
+  Dette "1" *-- "0..*" DettePaiement : est remboursee par
+  DeclarationCnss ..> BulletinPaie : agrege
+
+  note bottom of Facture
+    type : FACTURE ou DEVIS (meme entite). Un devis
+    n'est jamais soumis a la TVA ni au timbre fiscal,
+    contrairement a une facture -- meme structure
+    de lignes (LigneDocument).
+  end note
+
+  note bottom of ServiceCatalogue
+    Catalogue de prestations : simple aide a la
+    pre-saisie des lignes, pas de lien persistant
+    fort avec Facture.
+  end note
+
+  note bottom of ParametresPaie
+    Table de configuration a ligne unique :
+    parametrise les calculs de tous les BulletinPaie
+    du systeme.
+  end note
+}
+
+@enduml

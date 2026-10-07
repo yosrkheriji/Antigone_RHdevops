@@ -1,0 +1,78 @@
+@startuml 06_media_plan
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFF3F3
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Media Plan (Reseaux Sociaux)"
+
+class Employe #F3F8FF {
+  matricule
+  nom / prenom
+}
+
+class Client #FFFDF0 {
+  nom
+  loginClient
+}
+
+class CalendrierProjet #FFFDF0 {
+  dateSlot
+  statut
+}
+
+class MediaPlan {
+  datePublication
+  titre
+  format
+  type
+  platforme
+  statut
+  etatPublication
+  lienDrive
+}
+
+class MediaPlanComment {
+  columnKey
+  content
+  createdAt
+}
+
+class ReactifIntern {
+  type
+  contenu
+  dateReactif
+  nombreFois
+}
+
+class Assignation <<association class>> {
+  dateAssignment
+}
+
+Client "1" *-- "0..*" MediaPlan : concerne
+Employe "1" -- "0..*" MediaPlan : cree
+Employe "0..*" -- "0..*" Client : est assigne a
+(Employe, Client) .. Assignation
+MediaPlan "1" *-- "0..*" MediaPlanComment : recoit
+Employe "1" -- "0..*" MediaPlanComment : redige
+MediaPlan "0..1" -- "0..1" CalendrierProjet : correspond a
+Tache "0..1" -- "0..*" ReactifIntern : recoit
+MediaPlan "0..1" -- "0..*" ReactifIntern : recoit
+Employe "1" -- "0..*" ReactifIntern : redige
+
+class Tache #FFFDF0 {
+  titre
+}
+
+note bottom of MediaPlan
+  lienDrive : integration Google Drive
+  pour les livrables du client (acteur
+  secondaire "Google Drive" du diagramme
+  de cas d'utilisation).
+end note
+
+@enduml

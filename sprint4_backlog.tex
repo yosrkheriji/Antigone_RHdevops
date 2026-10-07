@@ -1,0 +1,91 @@
+% Packages nécessaires : \usepackage{longtable}, \usepackage{multirow}, \usepackage{array}
+% Sous-ensemble du backlog produit (backlog_antigone_rh.tex) affecté au Sprint 4.
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du Sprint 4 -- Gestion de projet (Projets, Tâches, Calendrier de production, Réunions, Media Plan)} \label{tab:backlog-sprint-4} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{4}{*}{M8} & \multirow{4}{*}{Réunions} & M8.1 & En tant qu'employé, je souhaite planifier une réunion. & Moyenne \\
+\cline{3-5}
+ & & M8.2 & En tant qu'employé, je souhaite répondre à une invitation de réunion. & Faible \\
+\cline{3-5}
+ & & M8.3 & En tant qu'employé, je souhaite consulter mes réunions par période. & Faible \\
+\cline{3-5}
+ & & M8.4 & En tant qu'employé, je souhaite supprimer une réunion. & Faible \\
+\hline
+\multirow{9}{*}{M12} & \multirow{9}{*}{Gestion des projets} & M12.1 & En tant que chef de projet, je souhaite créer un projet. & Moyenne \\
+\cline{3-5}
+ & & M12.2 & En tant que chef de projet, je souhaite modifier un projet. & Moyenne \\
+\cline{3-5}
+ & & M12.3 & En tant que chef de projet, je souhaite changer le statut d'un projet. & Faible \\
+\cline{3-5}
+ & & M12.4 & En tant qu'employé, je souhaite consulter mes projets. & Faible \\
+\cline{3-5}
+ & & M12.5 & En tant que chef de projet, je souhaite filtrer les projets par client, employé ou statut. & Moyenne \\
+\cline{3-5}
+ & & M12.6 & En tant que chef de projet, je souhaite assigner une équipe à un projet. & Moyenne \\
+\cline{3-5}
+ & & M12.7 & En tant que chef de projet, je souhaite consulter le rapport de cycle de vie d'un projet. & Élevée \\
+\cline{3-5}
+ & & M12.8 & En tant que chef de projet, je souhaite créer une équipe. & Faible \\
+\cline{3-5}
+ & & M12.9 & En tant que chef de projet, je souhaite gérer les membres d'une équipe (ajouter/retirer). & Moyenne \\
+\hline
+\multirow{7}{*}{M13} & \multirow{7}{*}{Gestion des tâches} & M13.1 & En tant que chef de projet, je souhaite créer une tâche. & Faible \\
+\cline{3-5}
+ & & M13.2 & En tant que chef de projet, je souhaite assigner une tâche à un employé. & Moyenne \\
+\cline{3-5}
+ & & M13.3 & En tant qu'employé, je souhaite changer le statut d'une tâche sur le tableau Kanban. & Faible \\
+\cline{3-5}
+ & & M13.4 & En tant que chef de projet, je souhaite définir une échéance pour une tâche. & Faible \\
+\cline{3-5}
+ & & M13.5 & En tant que chef de projet, je souhaite archiver ou désarchiver une tâche. & Faible \\
+\cline{3-5}
+ & & M13.6 & En tant que chef de projet, je souhaite envoyer une relance sur une tâche en retard. & Faible \\
+\cline{3-5}
+ & & M13.7 & En tant qu'administrateur, je souhaite consulter le tableau de bord des tâches. & Moyenne \\
+\hline
+\multirow{4}{*}{M14} & \multirow{4}{*}{Calendrier de production} & M14.1 & En tant que coordinateur, je souhaite planifier un créneau de tournage. & Moyenne \\
+\cline{3-5}
+ & & M14.2 & En tant qu'employé, je souhaite consulter le calendrier des tournages. & Faible \\
+\cline{3-5}
+ & & M14.3 & En tant que coordinateur, je souhaite marquer un créneau comme urgent. & Faible \\
+\cline{3-5}
+ & & M14.4 & En tant que coordinateur, je souhaite valider ou rejeter un shooting. & Moyenne \\
+\hline
+\multirow{10}{*}{M15} & \multirow{10}{*}{Media Plan} & M15.1 & En tant que social media manager, je souhaite créer une ligne de media plan. & Moyenne \\
+\cline{3-5}
+ & & M15.2 & En tant que social media manager, je souhaite créer plusieurs lignes de media plan en masse. & Élevée \\
+\cline{3-5}
+ & & M15.3 & En tant qu'employé, je souhaite consulter mon media plan. & Faible \\
+\cline{3-5}
+ & & M15.4 & En tant qu'administrateur, je souhaite consulter tous les media plans. & Faible \\
+\cline{3-5}
+ & & M15.5 & En tant que social media manager, je souhaite soumettre un media plan pour validation client. & Moyenne \\
+\cline{3-5}
+ & & M15.6 & En tant que manager, je souhaite approuver ou désapprouver un media plan en interne. & Moyenne \\
+\cline{3-5}
+ & & M15.7 & En tant que client, je souhaite approuver ou désapprouver un media plan. & Moyenne \\
+\cline{3-5}
+ & & M15.8 & En tant que manager, je souhaite ajouter des rectifications à un media plan. & Faible \\
+\cline{3-5}
+ & & M15.9 & En tant qu'utilisateur, je souhaite commenter une ligne de media plan. & Faible \\
+\cline{3-5}
+ & & M15.10 & En tant qu'administrateur, je souhaite assigner un employé à un client pour le media plan. & Moyenne \\
+\hline
+\end{longtable}

@@ -1,0 +1,94 @@
+@startuml 05_admin
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam usecase {
+  BackgroundColor #F7F3FF
+  BorderColor #333333
+  ArrowColor #333333
+  FontSize 12
+}
+skinparam actor {
+  BorderColor #333333
+  FontSize 12
+}
+skinparam ArrowColor #333333
+
+title Espace Administrateur
+
+actor "Administrateur" as Admin
+actor "Service de messagerie" as Messagerie <<systeme>>
+
+usecase "Gerer les employes\net l'organigramme" as UC_GererEmployes
+usecase "Ajouter un employe" as UC_AjouterEmploye
+usecase "Modifier une fiche\nemploye" as UC_ModifierEmploye
+usecase "Archiver un employe" as UC_ArchiverEmploye
+usecase "Consulter l'organigramme" as UC_Organigramme
+UC_GererEmployes ..> UC_AjouterEmploye : <<include>>
+UC_GererEmployes ..> UC_ModifierEmploye : <<include>>
+UC_GererEmployes ..> UC_ArchiverEmploye : <<include>>
+UC_GererEmployes ..> UC_Organigramme : <<include>>
+
+usecase "Configurer le calendrier\net les horaires" as UC_ConfigCalendrier
+usecase "Configurer le calendrier\nd'entreprise (jours feries)" as UC_JoursFeries
+usecase "Configurer les horaires\nde travail" as UC_Horaires
+usecase "Gerer les restrictions\nde dates de conge" as UC_RestrictionConge
+UC_ConfigCalendrier ..> UC_JoursFeries : <<include>>
+UC_ConfigCalendrier ..> UC_Horaires : <<include>>
+UC_ConfigCalendrier ..> UC_RestrictionConge : <<include>>
+
+usecase "Gerer les comptes\nutilisateurs" as UC_GererComptes
+usecase "Creer un compte" as UC_CreerCompte
+usecase "Modifier / activer /\ndesactiver un compte" as UC_ModifierCompte
+usecase "Reinitialiser un\nmot de passe" as UC_ResetPwd
+UC_GererComptes ..> UC_CreerCompte : <<include>>
+UC_GererComptes ..> UC_ModifierCompte : <<include>>
+UC_GererComptes ..> UC_ResetPwd : <<include>>
+
+usecase "Gerer les roles\net permissions" as UC_GererRoles
+usecase "Creer un role" as UC_CreerRole
+usecase "Modifier un role" as UC_ModifierRole
+usecase "Attribuer des\npermissions" as UC_AttribuerPermissions
+UC_GererRoles ..> UC_CreerRole : <<include>>
+UC_GererRoles ..> UC_ModifierRole : <<include>>
+UC_GererRoles ..> UC_AttribuerPermissions : <<include>>
+
+usecase "Parametrer les\nreferentiels" as UC_Referentiels
+usecase "Creer / modifier une\nvaleur de referentiel" as UC_ValeurReferentiel
+usecase "Desactiver une valeur\nde referentiel" as UC_DesactiverReferentiel
+UC_Referentiels ..> UC_ValeurReferentiel : <<include>>
+UC_Referentiels ..> UC_DesactiverReferentiel : <<include>>
+
+usecase "Suivre la presence\net l'activite" as UC_Presence
+usecase "Consulter le rapport\nde presence" as UC_RapportPresence
+usecase "Detecter les absences" as UC_DetecterAbsences
+usecase "Generer des\nstatistiques" as UC_StatsPresence
+UC_Presence ..> UC_RapportPresence : <<include>>
+UC_Presence ..> UC_DetecterAbsences : <<include>>
+UC_Presence ..> UC_StatsPresence : <<include>>
+
+usecase "Superviser l'activite\nde l'agence" as UC_Superviser
+usecase "Consulter le tableau\nde bord global" as UC_DashboardGlobal
+usecase "Consulter les indicateurs\npar projet" as UC_IndicateursProjet
+usecase "Consulter les alertes" as UC_Alertes
+UC_Superviser ..> UC_DashboardGlobal : <<include>>
+UC_Superviser ..> UC_IndicateursProjet : <<include>>
+UC_Superviser ..> UC_Alertes : <<include>>
+
+Admin -- UC_GererEmployes
+Admin -- UC_ConfigCalendrier
+Admin -- UC_GererComptes
+Admin -- UC_GererRoles
+Admin -- UC_Referentiels
+Admin -- UC_Presence
+Admin -- UC_Superviser
+
+Messagerie -- UC_GererComptes
+
+note bottom of Admin
+  Herite (via Validateur, Chef de Projet et
+  Responsable Finance) de tous les cas
+  d'utilisation des panneaux precedents.
+end note
+
+@enduml

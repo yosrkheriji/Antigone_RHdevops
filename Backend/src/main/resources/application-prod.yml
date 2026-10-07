@@ -1,0 +1,119 @@
+server:
+  port: ${PORT:8080}
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000,http://localhost:3001,http://localhost:3002}
+  frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+  # Domaine reel du service Render (cf. frontend-*/.env.production VITE_API_URL) ;
+  # PUBLIC_BACKEND_URL permet de le surcharger sans redeploiement si le service ou
+  # son domaine change.
+  public-backend-url: ${PUBLIC_BACKEND_URL:https://antigone-rh.onrender.com}
+  mail:
+    from: ${MAIL_FROM:karimarouchi123@gmail.com}
+    from-name: Antigone RH
+    enabled: true
+    brevo-api-key: ${BREVO_API_KEY:}
+  upload:
+    dir: uploads/justificatifs
+  google:
+    drive:
+      service-account-key-path: ${GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY_PATH:/etc/secrets/service-account.json}
+      client-viewer-key-path: ${GOOGLE_DRIVE_CLIENT_VIEWER_KEY_PATH:/etc/secrets/client-viewer-service-account.json}
+      tokens-directory-path: tokens
+      parent-folder-id: ${GOOGLE_DRIVE_PARENT_FOLDER_ID:}
+      redirect-uri: ${GOOGLE_DRIVE_REDIRECT_URI:}
+
+  # ── Assistant IA (LangChain4j + OpenAI) ────────────────────────────────────
+  # Sans OPENAI_API_KEY l'application demarre normalement : seuls les endpoints
+  # /api/v1/** repondent 503, le reste du backend RH est intact.
+  ai:
+    enabled: ${AI_ENABLED:true}
+    chat:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model: ${OPENAI_CHAT_MODEL:gpt-4o}
+      temperature: 0.7
+      # 0s = aucune limite. Une generation de media plan enchaine retrieval,
+      # plusieurs appels LLM et des appels Drive : la brider couperait des
+      # reponses valides en plein milieu. Le heartbeat SSE maintient la
+      # connexion, c'est lui qui garantit qu'aucun proxy ne la ferme.
+      timeout: 0s
+      max-retries: 2
+      max-tool-calling-round-trips: 10
+      log-requests: false
+      log-responses: false
+    embedding:
+      # Vide = reprend la cle de chat.
+      api-key: ${OPENAI_EMBEDDING_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
+      # Doit correspondre au modele : 1536 pour text-embedding-3-small.
+      dimensions: 1536
+      timeout: 0s
+      max-retries: 3
+    rag:
+      dense-top-k: 12
+      sparse-top-k: 12
+      final-top-k: 8
+      # Poids de la branche dense dans la fusion RRF ; le lexical recoit 1 - poids.
+      dense-weight: 0.6
+      rrf-k: 60
+      text-search-config: french
+      reindex-cron: "0 0 3 * * *"
+      reindex-on-startup: ${AI_REINDEX_ON_STARTUP:true}
+    memory:
+      max-messages: 20
+      summarize-every: 6
+      summarization-enabled: true
+    sse:
+      # Maintient la connexion pendant les phases sans token (appel Drive lent).
+      heartbeat-interval: 15s
+      # 0s = le flux ne s'interrompt jamais de lui-meme.
+      timeout: 0s
+    rate-limit:
+      enabled: true
+      requests-per-window: 20
+      window: 1m
+    reminder:
+      soft-max-days: 7
+      firm-max-days: 30
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mail.MailAutoConfiguration
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  sql:
+    init:
+      mode: always
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  mvc:
+    async:
+      # -1 = le conteneur n'interrompt jamais une requete asynchrone. Sans cela,
+      # Spring MVC coupe les flux SSE apres son delai par defaut, quelle que soit
+      # la configuration de l'assistant.
+      request-timeout: -1
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

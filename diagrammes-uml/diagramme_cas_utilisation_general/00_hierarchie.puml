@@ -1,0 +1,52 @@
+@startuml 00_hierarchie
+left to right direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam actor {
+  BorderColor #333333
+  FontSize 13
+}
+skinparam ArrowColor #333333
+skinparam defaultFontSize 13
+
+title Hierarchie des acteurs -- Diagramme de cas d'utilisation general (Antigone RH)
+
+legend top left
+  |= Notation |= Signification |
+  | --|> | Generalisation (heritage entre acteurs) |
+  | -- | Association (acteur <-> cas d'utilisation) |
+  | ..> <<include>> | Inclusion (sous cas d'utilisation) |
+  | <<systeme>> | Acteur secondaire non humain |
+endlegend
+
+actor "Employe" as Employe
+actor "Responsable hierarchique\n/ Validateur" as Validateur
+actor "Chef de Projet" as ChefProjet
+actor "Responsable Finance" as Finance
+actor "Administrateur" as Admin
+actor "Client" as Client
+
+actor "Service de messagerie" as Messagerie <<systeme>>
+actor "Agent de presence\n(Agent Desktop)" as AgentPresence <<systeme>>
+actor "Google Drive" as Drive <<systeme>>
+actor "Assistant conversationnel\n(Chatbot IA)" as Chatbot <<systeme>>
+
+Validateur --|> Employe
+ChefProjet --|> Employe
+Finance    --|> Employe
+Admin      --|> Validateur
+Admin      --|> ChefProjet
+Admin      --|> Finance
+
+note right of Admin
+  L'Administrateur herite des trois roles
+  metier : il detient donc, par transitivite,
+  l'ensemble des permissions du systeme.
+end note
+
+note bottom of Client
+  Acteur externe a l'entreprise : n'herite
+  pas d'Employe (acces dedie, hors comptes internes).
+end note
+
+@enduml

@@ -1,0 +1,69 @@
+% Packages nécessaires : \usepackage{longtable}, \usepackage{multirow}, \usepackage{array}
+% Sous-ensemble du backlog produit (backlog_antigone_rh.tex) affecté au Sprint 5.
+
+\begin{longtable}{|c|c|c|p{7.2cm}|c|}
+\caption{Backlog du Sprint 5 -- Module Finance (Facturation, Paie, Charges \& Dettes, CNSS \& TVA)} \label{tab:backlog-sprint-5} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endfirsthead
+
+\multicolumn{5}{c}{\textit{Suite de la page précédente}} \\
+\hline
+\textbf{ID} & \textbf{Module} & \textbf{ID US} & \textbf{User Story} & \textbf{Complexité} \\
+\hline
+\endhead
+
+\hline \multicolumn{5}{r}{\textit{Suite à la page suivante}} \\
+\endfoot
+
+\hline
+\endlastfoot
+
+\multirow{7}{*}{M16} & \multirow{7}{*}{Finance - Facturation} & M16.1 & En tant que comptable, je souhaite créer une facture. & Moyenne \\
+\cline{3-5}
+ & & M16.2 & En tant que comptable, je souhaite créer un devis. & Moyenne \\
+\cline{3-5}
+ & & M16.3 & En tant que comptable, je souhaite marquer une facture comme payée. & Faible \\
+\cline{3-5}
+ & & M16.4 & En tant que comptable, je souhaite enregistrer un paiement partiel de facture. & Moyenne \\
+\cline{3-5}
+ & & M16.5 & En tant que comptable, je souhaite consulter les factures impayées. & Faible \\
+\cline{3-5}
+ & & M16.6 & En tant que comptable, je souhaite gérer le catalogue de services. & Faible \\
+\cline{3-5}
+ & & M16.7 & En tant que comptable, je souhaite générer et envoyer une relance client. & Moyenne \\
+\hline
+\multirow{7}{*}{M17} & \multirow{7}{*}{Finance - Paie} & M17.1 & En tant que comptable, je souhaite configurer les paramètres de paie (CNSS, TFP...). & Élevée \\
+\cline{3-5}
+ & & M17.2 & En tant que comptable, je souhaite configurer les barèmes IRPP. & Élevée \\
+\cline{3-5}
+ & & M17.3 & En tant que comptable, je souhaite calculer le bulletin de paie d'un employé. & Élevée \\
+\cline{3-5}
+ & & M17.4 & En tant que comptable, je souhaite générer les bulletins de paie de tous les employés. & Élevée \\
+\cline{3-5}
+ & & M17.5 & En tant que comptable, je souhaite consulter les bulletins de paie par mois. & Faible \\
+\cline{3-5}
+ & & M17.6 & En tant que comptable, je souhaite enregistrer un acompte sur salaire. & Moyenne \\
+\cline{3-5}
+ & & M17.7 & En tant que comptable, je souhaite marquer un bulletin de paie comme payé. & Faible \\
+\hline
+\multirow{5}{*}{M18} & \multirow{5}{*}{Finance - Charges \& Dettes} & M18.1 & En tant que comptable, je souhaite ajouter une charge fixe. & Faible \\
+\cline{3-5}
+ & & M18.2 & En tant que comptable, je souhaite ajouter une charge variable. & Faible \\
+\cline{3-5}
+ & & M18.3 & En tant que comptable, je souhaite enregistrer le paiement d'une charge fixe. & Faible \\
+\cline{3-5}
+ & & M18.4 & En tant que comptable, je souhaite consulter l'état des charges par mois. & Moyenne \\
+\cline{3-5}
+ & & M18.5 & En tant que comptable, je souhaite gérer les dettes de l'agence et leurs paiements. & Moyenne \\
+\hline
+\multirow{4}{*}{M19} & \multirow{4}{*}{Finance - CNSS \& TVA} & M19.1 & En tant que comptable, je souhaite consulter la suggestion de déclaration CNSS trimestrielle. & Élevée \\
+\cline{3-5}
+ & & M19.2 & En tant que comptable, je souhaite enregistrer une déclaration CNSS. & Moyenne \\
+\cline{3-5}
+ & & M19.3 & En tant que comptable, je souhaite marquer une déclaration CNSS comme payée. & Faible \\
+\cline{3-5}
+ & & M19.4 & En tant que comptable, je souhaite consulter le tableau de bord financier (TVA, résultat net). & Élevée \\
+\hline
+\end{longtable}

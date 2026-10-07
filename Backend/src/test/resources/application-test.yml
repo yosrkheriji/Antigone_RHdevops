@@ -1,0 +1,59 @@
+# Profil de test d'integration.
+#
+# L'assistant est laisse SANS cle API : les beans LLM reels ne sont donc jamais
+# construits, et les tests injectent des doublures via @MockitoBean. Aucun appel
+# reseau, aucun cout, et des assertions deterministes.
+app:
+  jwt:
+    secret: test-secret-key-for-integration-tests-32chars-min
+    expiration-hours: 1
+  mail:
+    enabled: false
+  frontend-url: http://localhost:3000
+  google:
+    drive:
+      service-account-key-path: none.json
+      client-viewer-key-path: none.json
+      parent-folder-id: ""
+  ai:
+    enabled: true
+    chat:
+      api-key: ""
+    embedding:
+      api-key: ""
+      # Le faux modele d'embedding des tests projette sur 3 axes. La colonne
+      # pgvector est declaree a cette taille, sinon Postgres rejette l'insertion.
+      dimensions: 3
+    rag:
+      reindex-on-startup: false
+      text-search-config: french
+    memory:
+      max-messages: 6
+      summarize-every: 2
+    sse:
+      heartbeat-interval: 150ms
+      timeout: 30s
+    rate-limit:
+      enabled: false
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    init:
+      # data.sql contient des migrations correctives incompatibles avec un schema
+      # cree de zero par Hibernate.
+      mode: never
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mail.MailAutoConfiguration
+
+logging:
+  level:
+    root: WARN
+    com.antigone.rh: INFO
+    org.testcontainers: WARN

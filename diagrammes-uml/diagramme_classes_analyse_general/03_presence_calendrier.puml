@@ -1,0 +1,79 @@
+@startuml 03_presence_calendrier
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFF8F0
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Presence et Calendrier"
+
+class Employe #F3F8FF {
+  matricule
+  nom / prenom
+}
+
+class Pointage {
+  datePointage
+  heureEntree
+  heureSortie
+  statut
+  surReseauEntreprise
+}
+
+class HoraireTravail {
+  nom
+  heureDebut
+  heureFin
+  joursTravail
+  joursTeletravail
+}
+
+class AffectationHoraire {
+  dateDebut
+  dateFin
+}
+
+class Calendrier {
+  dateJour
+  nomJour
+  typeJour
+  origine
+}
+
+class PeriodeBloquee {
+  dateDebut
+  dateFin
+  nbMinEmployes
+  raison
+}
+
+class RapportInactivite {
+  periode
+  dureeInactivite
+  motif
+}
+
+Employe "1" -- "0..*" Pointage : pointe
+Employe "1" *-- "0..*" AffectationHoraire : historique
+AffectationHoraire "0..*" -- "1" HoraireTravail : applique
+Employe "1" -- "0..*" PeriodeBloquee : cree
+Employe "1" -- "0..*" RapportInactivite : concerne
+
+note bottom of Pointage
+  Alimente automatiquement par l'agent de
+  presence (heartbeat reseau) : le signal
+  brut (Heartbeat) est un detail technique,
+  non represente a ce niveau d'analyse.
+end note
+
+note bottom of AffectationHoraire
+  Materialise l'historique des horaires
+  d'un employe dans le temps (horaire
+  standard, ete, teletravail impose...),
+  plutot qu'un simple horaire courant.
+end note
+
+@enduml

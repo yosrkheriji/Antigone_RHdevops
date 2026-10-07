@@ -1,0 +1,83 @@
+@startuml Architecture_Physique_Locale
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam node {
+  BorderColor #333333
+  BackgroundColor #FFFFFF
+}
+skinparam rectangle {
+  BorderColor #333333
+}
+skinparam database {
+  BorderColor #333333
+}
+skinparam ArrowColor #333333
+
+title Architecture physique -- Environnement local de developpement (Antigone RH)
+
+node "TIER 1 - Poste de developpement" as Tier1 #F3F8FF {
+  rectangle "Navigateur Web" as Browser {
+    artifact "localhost:3000\n(frontend-projects)" as FP
+    artifact "localhost:3001\n(frontend-rh)" as FRH
+    artifact "localhost:3002\n(frontend-finance)" as FFI
+  }
+  node "AgentDesktop\n(Electron, mode dev\nnon empaquete)" as Agent
+}
+
+node "TIER 2 - Serveurs de developpement frontend" as Tier2 #FFF8F0 {
+  node "vite --port 3000\n(npm run dev:projects)" as ViteP
+  node "vite --port 3001\n(npm run dev:rh)" as ViteRH
+  node "vite --port 3002\n(npm run dev:finance)" as ViteFI
+  artifact "@antigone/ai-chat-widget\n(package npm workspace,\npartage par les 3 SPA)" as Widget
+}
+
+node "TIER 3 - Backend" as Tier3 #F3FFF5 {
+  node "Processus Java local\n./mvnw spring-boot:run\nSpring Boot -- port 8080\n(PAS de conteneur Docker en local)" as Backend
+}
+
+node "TIER 4 - Base de donnees" as Tier4 #F7F3FF {
+  database "PostgreSQL (installation locale)\nlocalhost:5432 / antigone_rh" as DB
+}
+
+cloud "Services externes reels\n(memes en local, pas de mock)" as External #FFFDF0 {
+  node "OpenAI API\n(chat + embeddings)" as OpenAI
+  node "Brevo\n(envoi d'emails)" as Brevo
+  node "Google Drive API" as Drive
+}
+
+FP   ..> ViteP  : HTTP (HMR)
+FRH  ..> ViteRH : HTTP (HMR)
+FFI  ..> ViteFI : HTTP (HMR)
+ViteP  ..> Widget : import workspace
+ViteRH ..> Widget : import workspace
+ViteFI ..> Widget : import workspace
+
+FP  --> Backend : HTTPS / REST (JSON) + JWT
+FRH --> Backend : HTTPS / REST (JSON) + JWT
+FFI --> Backend : HTTPS / REST (JSON) + JWT
+Agent --> Backend : HTTPS / REST (JSON)\nappel direct, sans passer par Vite
+
+Backend --> DB : JDBC
+
+Backend --> OpenAI : HTTPS (assistant IA)
+Backend --> Brevo  : HTTPS (emails transactionnels)
+Backend --> Drive  : HTTPS (livrables, medias)
+
+note bottom of Tier3
+  Sans OPENAI_API_KEY valide, le backend demarre
+  quand meme : seuls les endpoints /api/v1/** (IA)
+  repondent 503, le reste de l'application reste
+  fonctionnel.
+end note
+
+note bottom of Tier4
+  Cree localement via : createdb antigone_rh
+  Meme moteur (PostgreSQL) qu'en production --
+  pas de base allegee (H2) utilisee en dev.
+end note
+
+note "Difference cle avec la production :\nni conteneur Docker, ni CDN, ni base geree --\nprocessus natifs lances directement sur le poste." as N1
+Tier3 .. N1
+
+@enduml

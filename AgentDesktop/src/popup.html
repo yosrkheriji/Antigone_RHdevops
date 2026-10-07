@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de Présence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-app-region: drag;
+        }
+
+        .container {
+            text-align: center;
+            padding: 30px;
+            width: 100%;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes tickerOut {
+            from {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes tickerIn {
+            from {
+                transform: translateY(80%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0%);
+                opacity: 1;
+            }
+        }
+
+        /* ── Ticker HH : MM : SS ────────────────────────────────────── */
+        .ticker-wrapper {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            align-items: start;
+            margin: 18px auto 22px;
+            max-width: 340px;
+        }
+
+        .ticker-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ticker-clip {
+            overflow: hidden;
+            height: 62px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ticker-num {
+            display: block;
+            font-size: 50px;
+            font-weight: 700;
+            font-family: 'Courier New', Consolas, monospace;
+            font-variant-numeric: tabular-nums;
+            color: #4fc3f7;
+            line-height: 1;
+        }
+
+        .ticker-divider {
+            height: 1px;
+            width: 80%;
+            background: rgba(255, 255, 255, 0.25);
+            margin: 6px 0 5px;
+        }
+
+        .ticker-label {
+            font-size: 10px;
+            font-weight: 300;
+            opacity: 0.6;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .ticker-colon {
+            font-size: 44px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.4);
+            line-height: 62px;
+            padding: 0 4px;
+        }
+
+        /* States */
+        .ticker-wrapper.warning .ticker-num {
+            color: #ff9800;
+        }
+
+        .ticker-wrapper.critical .ticker-num {
+            color: #f44336;
+            animation: pulse 1s infinite;
+        }
+
+        .ticker-wrapper.chrono .ticker-num {
+            color: #ff9800;
+            animation: pulse 1.5s infinite;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4fc3f7;
+            border-radius: 3px;
+            transition: width 1s linear;
+        }
+
+        .btn-confirm {
+            -webkit-app-region: no-drag;
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 14px 50px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-confirm:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .btn-confirm:active {
+            transform: scale(0.98);
+        }
+
+        /* ── Mode fin de journée ──────────────────────────────────── */
+        .clockout-mode body,
+        body.clockout {
+            background: linear-gradient(135deg, #3b1a4a 0%, #683b77 100%);
+        }
+
+        .clockout-icon {
+            font-size: 52px;
+            margin-bottom: 12px;
+        }
+
+        .clockout-time-display {
+            font-size: 38px;
+            font-weight: 700;
+            color: #e2b8ff;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .clockout-sub {
+            font-size: 13px;
+            opacity: 0.75;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .btn-clockout {
+            -webkit-app-region: no-drag;
+            background: linear-gradient(135deg, #683b77 0%, #9b5eb3 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 55px;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 20px rgba(104, 59, 119, 0.5);
+        }
+
+        .btn-clockout:hover {
+            background: linear-gradient(135deg, #7d4891 0%, #b56fd0 100%);
+            transform: scale(1.05);
+            box-shadow: 0 6px 28px rgba(104, 59, 119, 0.7);
+        }
+
+        .btn-clockout:active {
+            transform: scale(0.97);
+        }
+
+        .btn-clockout:disabled {
+            opacity: 0.7;
+            cursor: default;
+            transform: none;
+        }
+
+        .clockout-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 12px;
+            margin-bottom: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 11px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ── Mode présence (défaut) ─────────────────────────────────────── -->
+    <div class="container" id="presenceView">
+        <div class="icon" id="presenceIcon">🔔</div>
+        <h1 id="presenceTitle">Confirmation de Présence</h1>
+        <p class="message" id="presenceMsg">
+            Confirmez votre présence en cliquant sur le bouton ci-dessous.
+        </p>
+
+        <!-- Ticker HH : MM : SS (shadcn countdown-timer style) -->
+        <div class="ticker-wrapper" id="tickerWrapper">
+            <div class="ticker-cell">
+                <div class="ticker-clip"><span class="ticker-num" id="numH" data-val="00">00</span></div>
+                <div class="ticker-divider"></div>
+                <span class="ticker-label">Heures</span>
+            </div>
+            <div class="ticker-colon">:</div>
+            <div class="ticker-cell">
+                <div class="ticker-clip"><span class="ticker-num" id="numM" data-val="01">01</span></div>
+                <div class="ticker-divider"></div>
+                <span class="ticker-label">Minutes</span>
+            </div>
+            <div class="ticker-colon">:</div>
+            <div class="ticker-cell">
+                <div class="ticker-clip"><span class="ticker-num" id="numS" data-val="00">00</span></div>
+                <div class="ticker-divider"></div>
+                <span class="ticker-label">Secondes</span>
+            </div>
+        </div>
+
+        <div class="progress-bar" id="presenceProgressBar">
+            <div class="progress-fill" id="progressFill" style="width: 100%"></div>
+        </div>
+
+        <button class="btn-confirm" id="btnConfirm" onclick="confirmPresence()">
+            ✓ Je suis présent
+        </button>
+
+        <p class="footer">Antigone RH Agent - Surveillance automatique</p>
+    </div>
+
+    <!-- ── Mode fin de journée ───────────────────────────────────────── -->
+    <div class="container" id="clockoutView" style="display:none;">
+        <div class="clockout-icon">🏁</div>
+        <div class="clockout-badge" id="clockoutBadge">Fin de journée</div>
+        <h1>Validation de fin de service</h1>
+        <p class="message" id="clockoutMsg">
+            Votre journée se termine à <strong id="clockoutHeure">18:00</strong>.<br>
+            Veuillez confirmer votre départ.
+        </p>
+        <div class="clockout-time-display" id="clockoutCountdown">--:--</div>
+        <p class="clockout-sub">Temps restant avant la fin de votre shift</p>
+
+        <button class="btn-clockout" id="btnClockout" onclick="confirmClockout()">
+            ✓ &nbsp;Je valide mon départ
+        </button>
+
+        <p class="footer">Antigone RH Agent · Validation obligatoire</p>
+    </div>
+
+    <script>
+        // ── Mode présence ────────────────────────────────────────────────────
+        let timeoutSeconds = 60;
+        let remainingSeconds = timeoutSeconds;
+        let countdownInterval = null;
+
+        // ── Mode fin de journée ──────────────────────────────────────────────
+        let clockoutInterval = null;
+        let clockoutEndHour = 18;
+        let clockoutEndMin = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Présence mode
+            window.agentDesktop.onSetTimeout((seconds) => {
+                timeoutSeconds = seconds;
+                remainingSeconds = seconds;
+                updateCountdownDisplay();
+                startCountdown();
+            });
+
+            // Fin de journée mode
+            window.agentDesktop.onSetClockoutMode((data) => {
+                // Cacher présence, afficher clockout
+                document.getElementById('presenceView').style.display = 'none';
+                document.getElementById('clockoutView').style.display = 'block';
+                document.body.style.background = 'linear-gradient(135deg, #3b1a4a 0%, #683b77 100%)';
+
+                const [h, m] = data.heureFinTravail.split(':').map(Number);
+                clockoutEndHour = h;
+                clockoutEndMin = m;
+
+                document.getElementById('clockoutHeure').textContent = data.heureFinTravail;
+                document.getElementById('clockoutBadge').textContent =
+                    `Fin de shift · encore ~${data.minutesBeforeEnd} min`;
+
+                startClockoutCountdown();
+            });
+        });
+
+        // ── Ticker animation (shadcn-style slide) ───────────────────────────
+        function animateTicker(numId, newVal) {
+            const el = document.getElementById(numId);
+            const str = String(newVal).padStart(2, '0');
+            if (el.dataset.val === str) return;   // rien à faire
+            el.dataset.val = str;
+            // slide out vers le haut
+            el.style.animation = 'tickerOut 0.25s cubic-bezier(0.55,0,1,0.45) forwards';
+            setTimeout(() => {
+                el.textContent = str;
+                // slide in depuis le bas
+                el.style.animation = 'tickerIn 0.32s cubic-bezier(0,0.55,0.45,1) forwards';
+                setTimeout(() => { el.style.animation = ''; }, 350);
+            }, 230);
+        }
+
+        function setTickerFromSeconds(totalSec) {
+            const hh = Math.floor(totalSec / 3600);
+            const mm = Math.floor((totalSec % 3600) / 60);
+            const ss = totalSec % 60;
+            animateTicker('numH', hh);
+            animateTicker('numM', mm);
+            animateTicker('numS', ss);
+        }
+
+        // ── Présence countdown puis chronomètre ─────────────────────────────
+        let chronoSeconds = 0;
+        let inChronoMode = false;
+
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                if (!inChronoMode) {
+                    remainingSeconds--;
+                    updateCountdownDisplay();
+                    if (remainingSeconds <= 0) {
+                        inChronoMode = true;
+                        switchToChrono();
+                    }
+                } else {
+                    chronoSeconds++;
+                    setTickerFromSeconds(chronoSeconds);
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            setTickerFromSeconds(remainingSeconds);
+            const progressFill = document.getElementById('progressFill');
+            const wrapper = document.getElementById('tickerWrapper');
+            const percent = (remainingSeconds / timeoutSeconds) * 100;
+            progressFill.style.width = percent + '%';
+            wrapper.className = 'ticker-wrapper';
+            if (remainingSeconds <= 10) {
+                wrapper.classList.add('critical');
+                progressFill.style.background = '#f44336';
+            } else if (remainingSeconds <= 20) {
+                wrapper.classList.add('warning');
+                progressFill.style.background = '#ff9800';
+            } else {
+                progressFill.style.background = '#4fc3f7';
+            }
+        }
+
+        function switchToChrono() {
+            document.getElementById('presenceProgressBar').style.display = 'none';
+            document.getElementById('presenceIcon').textContent = '⏰';
+            document.getElementById('presenceTitle').textContent = 'Êtes-vous encore là ?';
+            document.getElementById('presenceMsg').innerHTML =
+                'Vous n\'avez pas encore confirmé votre présence.<br>' +
+                'Cliquez sur le bouton pour signaler que vous êtes actif.';
+            document.getElementById('tickerWrapper').className = 'ticker-wrapper chrono';
+            chronoSeconds = 0;
+            // Reset data-val pour forcer la ré-animation dès le premier tick
+            ['numH', 'numM', 'numS'].forEach(id => {
+                const el = document.getElementById(id);
+                el.dataset.val = '';
+                el.textContent = '00';
+            });
+        }
+
+        function confirmPresence() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            const btn = document.getElementById('btnConfirm');
+            btn.textContent = '✓ Confirmé !';
+            btn.style.background = '#388e3c';
+            btn.disabled = true;
+            window.agentDesktop.sendPresenceResponse(true);
+        }
+
+        // ── Clockout countdown (temps restant jusqu'à la fin du shift) ───────
+        function startClockoutCountdown() {
+            updateClockoutCountdown();
+            clockoutInterval = setInterval(updateClockoutCountdown, 1000);
+        }
+
+        function updateClockoutCountdown() {
+            const now = new Date();
+            const end = new Date(now);
+            end.setHours(clockoutEndHour, clockoutEndMin, 0, 0);
+            const diffMs = end.getTime() - now.getTime();
+
+            if (diffMs <= 0) {
+                document.getElementById('clockoutCountdown').textContent = '00:00';
+                if (clockoutInterval) clearInterval(clockoutInterval);
+                return;
+            }
+
+            const totalSec = Math.floor(diffMs / 1000);
+            const mm = String(Math.floor(totalSec / 60)).padStart(2, '0');
+            const ss = String(totalSec % 60).padStart(2, '0');
+            document.getElementById('clockoutCountdown').textContent = `${mm}:${ss}`;
+        }
+
+        function confirmClockout() {
+            if (clockoutInterval) clearInterval(clockoutInterval);
+            const btn = document.getElementById('btnClockout');
+            btn.textContent = '✓ Départ validé !';
+            btn.disabled = true;
+            btn.style.background = 'linear-gradient(135deg, #2e7d32 0%, #43a047 100%)';
+            window.agentDesktop.sendClockoutConfirm();
+        }
+
+        // Démarrer le countdown présence par défaut (sera annulé si mode clockout)
+        updateCountdownDisplay();
+        startCountdown();
+    </script>
+</body>
+
+</html>

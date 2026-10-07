@@ -1,0 +1,149 @@
+server:
+  port: ${PORT:8080}
+
+app:
+  # CORS allowed origins — set FRONTEND_URL on Render; locally allow Projets (3000),
+  # RH (3001) et Finance (3002). Legacy Vite ports kept for compatibility (5173/5174).
+  frontend-url: ${FRONTEND_URL:${FRONTEND_BASE_URL:http://localhost:3000,http://localhost:3001,http://localhost:3002,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002,http://localhost:5173,http://localhost:5174}}
+  # URL publique de CE backend (pas du frontend) : sert a construire des liens absolus
+  # vers ses propres endpoints publics dans des emails, ex. le logo client affiche dans
+  # une relance (/api/clients/{id}/logo) — un client mail charge une image par URL
+  # absolue, jamais par un chemin relatif.
+  public-backend-url: ${PUBLIC_BACKEND_URL:http://localhost:${server.port}}
+  jwt:
+    # JWT_SECRET must be at least 32 characters. Override via env var in production (Render).
+    secret: ${JWT_SECRET:antigone-rh-local-dev-secret-key-change-in-prod}
+    expiration-hours: ${JWT_EXPIRATION_HOURS:12}
+  mail:
+    from: ${MAIL_FROM:${MAIL_USERNAME:yosr.khriji27@gmail.com}}
+    from-name: Antigone RH
+    enabled: true
+    brevo-api-key: ${BREVO_API_KEY:}
+  upload:
+    dir: uploads/justificatifs
+  bi:
+    # Rechargement de l'entrepot decisionnel (schema dwh). Planifie a 02h30,
+    # hors heures de saisie : le traitement fait un TRUNCATE avant rechargement.
+    etl-cron: ${BI_ETL_CRON:0 30 2 * * *}
+  google:
+    drive:
+      service-account-key-path: ${GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY_PATH:service-account.json}
+      client-viewer-key-path: ${GOOGLE_DRIVE_CLIENT_VIEWER_KEY_PATH:client-viewer-service-account.json}
+      tokens-directory-path: tokens
+      # Optional: Parent folder ID where all media plan folders will be created
+      parent-folder-id: ${GOOGLE_DRIVE_PARENT_FOLDER_ID:1Rk6jabDXelPFK_P1jkvABVhwf-hwnQdC}
+      # Must match the redirect URI registered in Google Cloud Console
+      redirect-uri: ${GOOGLE_DRIVE_REDIRECT_URI:http://localhost:8080/api/media-plans/google-drive/callback}
+
+  # ── Assistant IA (LangChain4j + OpenAI) ────────────────────────────────────
+  # Sans OPENAI_API_KEY l'application demarre normalement : seuls les endpoints
+  # /api/v1/** repondent 503, le reste du backend RH est intact.
+  ai:
+    enabled: ${AI_ENABLED:true}
+    chat:
+      api-key: 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
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model: ${OPENAI_CHAT_MODEL:gpt-4o}
+      temperature: 0.7
+      # 0s = aucune limite. Une generation de media plan enchaine retrieval,
+      # plusieurs appels LLM et des appels Drive : la brider couperait des
+      # reponses valides en plein milieu. Le heartbeat SSE maintient la
+      # connexion, c'est lui qui garantit qu'aucun proxy ne la ferme.
+      timeout: 0s
+      max-retries: 2
+      max-tool-calling-round-trips: 10
+      log-requests: false
+      log-responses: false
+    embedding:
+      # Vide = reprend la cle de chat.
+      api-key: ${OPENAI_EMBEDDING_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model: ${OPENAI_EMBEDDING_MODEL:text-embedding-3-small}
+      # Doit correspondre au modele : 1536 pour text-embedding-3-small.
+      dimensions: 1536
+      timeout: 0s
+      max-retries: 3
+    rag:
+      dense-top-k: 12
+      sparse-top-k: 12
+      final-top-k: 8
+      # Poids de la branche dense dans la fusion RRF ; le lexical recoit 1 - poids.
+      dense-weight: 0.6
+      rrf-k: 60
+      text-search-config: french
+      reindex-cron: "0 0 3 * * *"
+      # true en dev comme en prod : sans ca, tout ajout au RAG (comme le reglement
+      # interieur) exige un appel manuel a /api/v1/ai/admin/reindex avant d'etre
+      # trouvable, ce qu'aucune interface n'expose. L'indexation etant incrementale,
+      # un redemarrage frequent en dev ne recalcule que ce qui a change.
+      reindex-on-startup: ${AI_REINDEX_ON_STARTUP:true}
+    memory:
+      max-messages: 20
+      summarize-every: 6
+      summarization-enabled: true
+    sse:
+      # Maintient la connexion pendant les phases sans token (appel Drive lent).
+      heartbeat-interval: 15s
+      # 0s = le flux ne s'interrompt jamais de lui-meme.
+      timeout: 0s
+    rate-limit:
+      enabled: true
+      requests-per-window: 20
+      window: 1m
+    reminder:
+      soft-max-days: 7
+      firm-max-days: 30
+
+spring:
+  datasource:
+    # DATABASE_URL on Render must be in JDBC format:
+    #   jdbc:postgresql://host:5432/dbname
+    # (add the jdbc: prefix to the postgresql:// URL Render gives you)
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/antigone_rh}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:Karim123}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:yosr.khriji27@gmail.com}
+    password: ${MAIL_PASSWORD:jplc jkky tzzj xhvc}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    test-connection: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: -1
+      max-request-size: -1
+
+  mvc:
+    async:
+      # -1 = le conteneur n'interrompt jamais une requete asynchrone. Sans cela,
+      # Spring MVC coupe les flux SSE apres son delai par defaut, quelle que soit
+      # la configuration de l'assistant.
+      request-timeout: -1
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false

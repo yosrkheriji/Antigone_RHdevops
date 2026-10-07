@@ -1,0 +1,166 @@
+@startuml 07_finance
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #F3FFF5
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Finance"
+
+class Client #FFFDF0 {
+  nom
+  matriculeFiscale
+}
+
+class Employe #F3F8FF {
+  matricule
+  nom / prenom
+}
+
+class Facture {
+  numero
+  type
+  dateEmission
+  totalHt
+  totalTtc
+  montantPaye
+  statut
+}
+
+class LigneDocument {
+  designation
+  quantite
+  prixUnitaire
+  selectionnee
+}
+
+class ServiceCatalogue {
+  designation
+  prixDefaut
+  categorie
+  actif
+}
+
+class PaiementFacture {
+  montant
+  datePaiement
+}
+
+class RelanceClient {
+  dateRelance
+  envoyee
+  ton
+  dateEnvoi
+}
+
+class BulletinPaie {
+  mois
+  salaireBrut
+  cnssSalarie
+  irppMensuel
+  net
+  netAPayer
+}
+
+class AcompteSalaire {
+  mois
+  montant
+  date
+}
+
+class ChargeFixe {
+  label
+  montant
+  tauxTva
+  jourEcheance
+}
+
+class PaiementChargeFixe {
+  montant
+  datePaiement
+}
+
+class ChargeVariable {
+  mois
+  label
+  montant
+  categorie
+}
+
+class Dette {
+  label
+  creancier
+  montantTotal
+  montantPaye
+}
+
+class DettePaiement {
+  montant
+  datePaiement
+}
+
+class AutreRevenu {
+  mois
+  label
+  montant
+  categorie
+}
+
+class DeclarationCnss {
+  annee
+  trimestre
+  montantSalarie
+  montantEmployeur
+  montantPenalite
+  statut
+}
+
+class ParametresPaie {
+  cnssSalarie
+  cnssPatronale
+  tfp
+  foprolos
+  abattement
+}
+
+class BaremeIrpp {
+  effectiveFrom
+  tranches
+  notes
+}
+
+Client "1" -- "0..*" Facture : recoit
+Facture "1" *-- "0..*" LigneDocument : contient
+Facture "1" *-- "0..*" PaiementFacture : encaisse
+Facture "1" -- "0..*" RelanceClient : declenche
+ServiceCatalogue ..> LigneDocument : prefigure
+
+Employe "1" -- "0..*" BulletinPaie : percoit
+Employe "1" -- "0..*" AcompteSalaire : demande
+ChargeFixe "1" *-- "0..*" PaiementChargeFixe : est reglee par
+Dette "1" *-- "0..*" DettePaiement : est remboursee par
+DeclarationCnss ..> BulletinPaie : agrege
+
+note bottom of Facture
+  type : FACTURE ou DEVIS (meme entite).
+  Un devis n'est jamais soumis a la TVA
+  ni au timbre fiscal, contrairement a
+  une facture -- meme structure de lignes.
+end note
+
+note bottom of ServiceCatalogue
+  Catalogue de prestations : simple aide
+  a la pre-saisie des lignes, pas de lien
+  persistant fort avec Facture.
+end note
+
+note bottom of ParametresPaie
+  Table de configuration a ligne unique :
+  parametrise les calculs de tous les
+  BulletinPaie du systeme.
+end note
+
+@enduml

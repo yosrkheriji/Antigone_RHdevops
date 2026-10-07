@@ -1,0 +1,109 @@
+@startuml 05_projets_production
+hide circle
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFDF0
+  BorderColor #333333
+  ArrowColor #333333
+}
+
+title Package "Projets et Production"
+
+class Employe #F3F8FF {
+  matricule
+  nom / prenom
+}
+
+class Projet {
+  nom
+  statut
+  typeProjet
+  dateDebut
+  dateFin
+  description
+}
+
+class Tache {
+  titre
+  statut
+  dateEcheance
+  urgente
+  description
+}
+
+class TacheObligatoire {
+  nom
+  dates
+}
+
+class Equipe {
+  nom
+}
+
+class Competence {
+  nom
+  categorie
+  niveau
+}
+
+class Client {
+  nom
+  email
+  telephone
+  matriculeFiscale
+  loginClient
+}
+
+class ContactClient {
+  nom
+  poste
+  email
+  telephone
+}
+
+class Reunion {
+  titre
+  dateReunion
+  heureDebut
+  heureFin
+  typeReunion
+  statut
+}
+
+class CalendrierProjet {
+  dateSlot
+  type
+  statut
+  typeDeContenu
+  urgent
+}
+
+Client "1" *-- "0..*" ContactClient : possede
+Client "1" -- "0..*" Projet : commande
+Employe "1" -- "0..*" Projet : dirige >
+Employe "0..*" -- "0..*" Projet : participe
+Projet "1" *-- "0..*" Tache : contient
+Projet "1" *-- "0..*" Equipe : organise
+Equipe "0..*" -- "0..*" Employe : regroupe
+Tache "0..*" -- "0..1" Employe : est assignee a
+Employe "1" *-- "0..*" Competence : maitrise
+Equipe "0..1" -- "0..*" TacheObligatoire : concerne
+Employe "0..1" -- "0..*" TacheObligatoire : concerne
+Employe "1" -- "0..*" Reunion : organise
+Employe "0..*" -- "0..*" Reunion : participe
+Client "0..1" -- "0..*" Reunion : participe
+CalendrierProjet "0..*" -- "1" Employe : planifie par
+
+note bottom of Competence
+  Support du besoin "Suivre les competences
+  mobilisees par equipe" (Chef de Projet).
+end note
+
+note bottom of TacheObligatoire
+  Obligation recurrente (dates multiples),
+  rattachee a une equipe ou a un employe
+  precis -- distincte des Tache d'un Projet.
+end note
+
+@enduml

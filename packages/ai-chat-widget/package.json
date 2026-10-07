@@ -1,0 +1,46 @@
+{
+  "name": "@antigone/ai-chat-widget",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Widget de chat IA partage entre les applications Antigone (RH, Finance, et ulterieurement Projets).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles/widget.css"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.62.7",
+    "react-markdown": "^9.0.1",
+    "react-virtuoso": "^4.12.3",
+    "rehype-highlight": "^7.0.1",
+    "remark-gfm": "^4.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^25.0.1",
+    "msw": "^2.7.0",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.8"
+  }
+}
