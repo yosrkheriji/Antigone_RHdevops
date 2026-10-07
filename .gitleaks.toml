@@ -1,0 +1,22 @@
+# Configuration Gitleaks du job "secret-scan" (.github/workflows/ci-cd.yml).
+# Regles par defaut de Gitleaks + exclusions de fichiers qui ne sont pas du code livre.
+title = "Antigone 360 secret scan"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fichiers generes, archives et valeurs de test non sensibles"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)package-lock\.json$''',
+  '''(^|/)\.archive/''',
+  '''\.(pdf|png|jpe?g|webp|avif|gif|glb|exe|zip)$''',
+]
+# Faux positifs connus, autorises par valeur exacte (et non par fichier entier) :
+#  - en-tete de JWT tronque d'un exemple de reponse dans API_DOCUMENTATION.md
+#  - cle de signature JWT reservee aux tests d'integration (application-test.yml)
+regexes = [
+  '''^eyJhbGciOiJIUzI1NiJ9\.{0,3}$''',
+  '''^test-secret-key-for-integration-tests-32chars-min$''',
+]

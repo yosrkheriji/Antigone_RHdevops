@@ -1,0 +1,360 @@
+# Pipeline CI/CD d'Antigone 360.
+#
+# A chaque commit (toutes branches) :
+#   1. backend      : compilation Maven + tests unitaires (surefire) + tests
+#                     d'integration sur un vrai PostgreSQL (Testcontainers / failsafe)
+#   2. frontend     : npm ci, typecheck + tests Vitest du widget IA, build des 3 apps
+#   3. e2e          : tests Playwright de l'assistant IA dans les apps RH et Finance
+#   4. secret-scan  : recherche de secrets commites (Gitleaks)
+#   5. docker       : build des 4 images, demarrage de la pile complete avec
+#                     docker compose (smoke test), scan de vulnerabilites (Grype)
+# Sur master uniquement, si tout est vert :
+#   6. publish      : push des images sur GitHub Container Registry (ghcr.io)
+
+name: CI/CD
+
+on:
+  push:
+    branches: ["**"]
+    paths-ignore:
+      - "**.md"
+      - "rapport-pfe/**"
+      - "documentation-*/**"
+      - "diagrammes-uml/**"
+      - "*.tex"
+      - "*.pdf"
+  workflow_dispatch:
+
+# Un nouveau commit sur la meme branche annule le run precedent devenu obsolete.
+concurrency:
+  group: ci-cd-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_PREFIX: antigone
+  IMAGE_TAG: ci
+
+jobs:
+  # ---------------------------------------------------------------- backend
+  backend:
+    name: Backend · build & tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      checks: write # publication du rapport JUnit
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: Backend/pom.xml
+
+      - name: Compile, unit tests and integration tests (Testcontainers)
+        run: mvn -B -ntp verify
+
+      - name: Publish test report
+        if: always()
+        uses: mikepenz/action-junit-report@v6
+        with:
+          check_name: Backend test report
+          report_paths: Backend/target/*-reports/TEST-*.xml
+          detailed_summary: true
+          include_passed: true
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-test-reports
+          path: |
+            Backend/target/surefire-reports/
+            Backend/target/failsafe-reports/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  # --------------------------------------------------------------- frontend
+  frontend:
+    name: Frontend · typecheck, tests & build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies (npm workspaces)
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck shared AI widget
+        run: npm run typecheck:widget
+
+      - name: Unit tests of AI widget (Vitest)
+        run: npm run test:widget
+
+      - name: Build the 3 applications (tsc + vite)
+        run: npm run build:all
+
+      - name: Upload builds
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-dist
+          path: |
+            frontend-rh/dist/
+            frontend-finance/dist/
+            frontend-projects/dist/
+          retention-days: 3
+
+  # -------------------------------------------------------------------- e2e
+  e2e:
+    name: Frontend · end-to-end tests (Playwright)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      # Navigateur mis en cache entre les runs (cle = lockfile, donc version de Playwright).
+      - name: Cache Playwright browser
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Sans --with-deps : les bibliotheques systeme de Chromium sont deja presentes
+      # sur les runners Ubuntu de GitHub (Chrome y est preinstalle), ce qui evite un
+      # apt-get dependant de la disponibilite des miroirs Ubuntu.
+      - name: Install Chromium for Playwright
+        timeout-minutes: 10
+        run: npx playwright install chromium
+
+      - name: Run end-to-end tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright traces
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-results
+          path: packages/ai-chat-widget/test-results/
+          retention-days: 7
+
+  # ------------------------------------------------------------ secret-scan
+  secret-scan:
+    name: Security · secret scan (Gitleaks)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Scan working tree for secrets
+        run: |
+          docker run --rm -v "$PWD:/repo" -w /repo zricethezav/gitleaks:v8.30.1 \
+            dir /repo --config /repo/.gitleaks.toml --redact --verbose --exit-code 1
+
+  # ----------------------------------------------------------------- docker
+  docker:
+    name: Docker · build, smoke test & scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build backend image
+        uses: docker/build-push-action@v7
+        with:
+          context: Backend
+          file: Backend/Dockerfile
+          tags: ${{ env.IMAGE_PREFIX }}/backend:${{ env.IMAGE_TAG }}
+          load: true
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      - name: Build frontend-rh image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/frontend.Dockerfile
+          build-args: APP=rh
+          tags: ${{ env.IMAGE_PREFIX }}/frontend-rh:${{ env.IMAGE_TAG }}
+          load: true
+          cache-from: type=gha,scope=frontend-rh
+          cache-to: type=gha,mode=max,scope=frontend-rh
+
+      - name: Build frontend-finance image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/frontend.Dockerfile
+          build-args: APP=finance
+          tags: ${{ env.IMAGE_PREFIX }}/frontend-finance:${{ env.IMAGE_TAG }}
+          load: true
+          cache-from: type=gha,scope=frontend-finance
+          cache-to: type=gha,mode=max,scope=frontend-finance
+
+      - name: Build frontend-projects image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: docker/frontend.Dockerfile
+          build-args: APP=projects
+          tags: ${{ env.IMAGE_PREFIX }}/frontend-projects:${{ env.IMAGE_TAG }}
+          load: true
+          cache-from: type=gha,scope=frontend-projects
+          cache-to: type=gha,mode=max,scope=frontend-projects
+
+      - name: Start full stack (docker compose)
+        run: docker compose up -d --no-build --wait --wait-timeout 300
+
+      - name: Smoke tests
+        run: |
+          set -euo pipefail
+          check() { # check <nom> <url> <codes attendus>
+            code=$(curl -s -o /tmp/body -w '%{http_code}' "$2" "${@:4}")
+            echo "$1 -> HTTP $code"
+            [[ " $3 " == *" $code "* ]] || { echo "::error::$1 a repondu $code (attendu: $3)"; cat /tmp/body; exit 1; }
+          }
+          check "API OpenAPI"         http://localhost:8080/v3/api-docs 200
+          # Mauvais identifiants : prouve que l'API, la securite et la base repondent.
+          check "API login refuse"    http://localhost:8080/api/auth/login "400 401 403" \
+                -X POST -H 'Content-Type: application/json' -d '{"username":"smoke-test","password":"wrong-password"}'
+          check "API route protegee"  http://localhost:8080/api/employes "401 403"
+          for app in rh:3001 finance:3002 projects:3000; do
+            name=${app%%:*}; port=${app##*:}
+            check "frontend-$name /"            http://localhost:$port/ 200
+            grep -q 'id="root"' /tmp/body
+            check "frontend-$name route SPA"    http://localhost:$port/une/route/profonde 200
+            check "frontend-$name healthz"      http://localhost:$port/healthz 200
+          done
+
+      - name: Container status and logs
+        if: always()
+        run: |
+          docker compose ps
+          docker compose logs --no-color --tail=200 backend
+
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v
+
+      - name: Vulnerability scan (Grype)
+        run: |
+          echo "## Scan de vulnerabilites des images (Grype)" >> "$GITHUB_STEP_SUMMARY"
+          for img in backend frontend-rh frontend-finance frontend-projects; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock anchore/grype:v0.120.1 \
+              "$IMAGE_PREFIX/$img:$IMAGE_TAG" --only-fixed -o table > "grype-$img.txt" 2>/dev/null || true
+            {
+              echo "### $img"
+              echo "Critiques: $(grep -c ' Critical' "grype-$img.txt" || true) · Elevees: $(grep -c ' High' "grype-$img.txt" || true)"
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Upload vulnerability reports
+        uses: actions/upload-artifact@v7
+        with:
+          name: vulnerability-reports
+          path: grype-*.txt
+          retention-days: 7
+
+  # ---------------------------------------------------------------- publish
+  publish:
+    name: Publish images to GHCR
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [backend, frontend, e2e, secret-scan, docker]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - name: backend
+            context: Backend
+            file: Backend/Dockerfile
+            build-args: ""
+          - name: frontend-rh
+            context: .
+            file: docker/frontend.Dockerfile
+            build-args: APP=rh
+          - name: frontend-finance
+            context: .
+            file: docker/frontend.Dockerfile
+            build-args: APP=finance
+          - name: frontend-projects
+            context: .
+            file: docker/frontend.Dockerfile
+            build-args: APP=projects
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Image name
+        id: img
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/antigone/${{ matrix.name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image metadata (tags and labels)
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ steps.img.outputs.name }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=short
+
+      # Les couches viennent du cache du job docker : rien n'est recompile.
+      - name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          build-args: ${{ matrix.build-args }}
+          push: true
+          provenance: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+
+      # Quota de stockage GitHub Packages limite sur un depot prive :
+      # seules les 2 versions les plus recentes de chaque image sont gardees.
+      - name: Prune old image versions
+        uses: actions/delete-package-versions@v5
+        continue-on-error: true
+        with:
+          package-name: antigone/${{ matrix.name }}
+          package-type: container
+          min-versions-to-keep: 2

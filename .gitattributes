@@ -1,0 +1,9 @@
+# Les scripts executes dans les conteneurs Linux et sur les runners CI
+# doivent garder des fins de ligne LF, meme si le depot est clone sous Windows.
+*.sh      text eol=lf
+mvnw      text eol=lf
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+nginx.conf text eol=lf
