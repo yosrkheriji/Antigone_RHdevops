@@ -16,6 +16,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -43,8 +44,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * sans token, et le flux survit — mais la suite ne s'immobilise pas trois quarts de
  * minute. Que la configuration livree tienne reellement 90 s est verifie separement
  * par {@code AiTimeoutConfigurationTest}, sur le YAML de production.
+ *
+ * <p>{@code print = NONE} : l'impression de diagnostic de MockMvc parcourt les
+ * en-tetes de la reponse simulee pendant que le thread de generation termine encore
+ * l'emitter SSE. {@code MockHttpServletResponse} n'etant pas thread-safe, cela levait
+ * par intermittence une {@code ConcurrentModificationException} en CI — un artefact
+ * du test, absent d'un vrai conteneur de servlets. Les assertions sont inchangees.
  */
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 class MediaPlanStreamingIT extends AbstractAiIntegrationTest {
 
     /** Assez long pour produire plusieurs heartbeats a 150 ms d'intervalle. */
