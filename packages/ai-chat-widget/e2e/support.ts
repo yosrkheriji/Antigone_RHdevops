@@ -110,6 +110,32 @@ export async function signIn(page: Page, app: AppName): Promise<void> {
 }
 
 /** Branche le backend simule sur toutes les routes `/api/**`. */
+/**
+ * Mois sans activite pour les vues du tableau de bord Finance
+ * (encaissements, decaissements, resultat net, TVA) : chaque champ numerique a 0.
+ */
+function emptyFinanceMonth(mois: string): Record<string, unknown> {
+  const zero = (...keys: string[]) => Object.fromEntries(keys.map((key) => [key, 0]));
+  return {
+    mois,
+    aReverser: false,
+    ...zero(
+      // VueEncaissements
+      'totalFacture', 'totalEncaisse', 'totalPending', 'totalRemaining', 'totalAutresRevenus',
+      'grandTotal', 'partEncaisse', 'partAutresRevenus',
+      // VueDecaissements
+      'masseBrute', 'masseNette', 'chargesPatronales', 'coutTotalSalaires', 'netRestantAPayer',
+      'netReporte', 'chargesFixesDues', 'chargesFixesPayees', 'chargesFixesRestantes',
+      'chargesVariables', 'tvaSurCharges', 'dettesSoldeRestant', 'irpp', 'tfp', 'foprolos',
+      'totalTaxesDues', 'totalDecaissements',
+      // ResultatNet
+      'totalRevenus', 'totalDepenses', 'resultatNet', 'margePourcent',
+      // DeclarationTva
+      'tvaCollecteeFactures', 'tvaCollecteeAutresRevenus', 'tvaCollectee', 'tvaDeductible', 'tvaNette',
+    ),
+  };
+}
+
 export async function mockBackend(page: Page, backend: MockBackend): Promise<void> {
   // Les appels metier de l'application (factures, dashboard...) recoivent une
   // reponse vide : le test porte sur l'assistant, pas sur ces ecrans.
@@ -243,6 +269,13 @@ export async function mockBackend(page: Page, backend: MockBackend): Promise<voi
         headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' },
         body: chunks.join(''),
       });
+    }
+
+    // Tableau de bord Finance (page d'accueil de l'app) : il attend un objet par
+    // vue, pas une liste. Un mois sans activite (tout a zero) est une reponse
+    // neutre mais bien formee ; un tableau vide ferait planter son rendu.
+    if (path.startsWith('/api/finance/dashboard/')) {
+      return route.fulfill({ json: { success: true, data: emptyFinanceMonth(url.searchParams.get('mois') ?? '') } });
     }
 
     // Tout le reste de l'application : reponse neutre.

@@ -33,7 +33,7 @@ RUN npm run build -w frontend-${APP}
 
 # ---------- Etape 2 : service statique ----------
 # nginx-unprivileged : le processus ne tourne pas en root et ecoute sur 8080.
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.30-alpine
 ARG APP
 LABEL org.opencontainers.image.title="antigone-frontend-${APP}" \
       org.opencontainers.image.description="Antigone 360 - frontend ${APP} (React + Vite servi par nginx)"
