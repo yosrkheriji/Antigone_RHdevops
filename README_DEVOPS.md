@@ -131,9 +131,9 @@ branche annule le run précédent (`concurrency`).
 
 | Job | Ce qu'il fait | Échoue si |
 |---|---|---|
-| `backend` | JDK 17 + cache Maven, `mvn -B verify` : compilation, tests unitaires (surefire), tests d'intégration `*IT` (failsafe) sur un vrai PostgreSQL/pgvector démarré par **Testcontainers**. Rapport JUnit publié dans l'onglet *Checks*, rapports bruts en artefact. | compilation ou test KO |
-| `frontend` | Node 22 + cache npm, `npm ci`, typecheck du widget IA, tests **Vitest**, build des 3 apps (`tsc -b && vite build`). Les `dist/` sont en artefact. | erreur de type, test ou build KO |
-| `e2e` | Installe Chromium, lance les apps RH et Finance (Vite), exécute les scénarios **Playwright** de l'assistant IA (backend simulé par `page.route`). Traces en artefact si échec. | scénario KO |
+| `backend` | JDK 17 + cache Maven, `mvn -B verify` : compilation, tests unitaires (surefire), tests d'intégration `*IT` (failsafe) sur un vrai PostgreSQL/pgvector démarré par **Testcontainers**. Rapport JUnit publié dans l'onglet *Checks* (172 tests : 79 unitaires + 93 d'intégration), rapports bruts en artefact. | compilation ou test KO |
+| `frontend` | Node 22 + cache npm, `npm ci`, typecheck du widget IA, tests **Vitest** (75), build des 3 apps (`tsc -b && vite build`). Les `dist/` sont en artefact. | erreur de type, test ou build KO |
+| `e2e` | Installe Chromium (mis en cache, sans `apt` : les bibliothèques système sont déjà sur le runner ; étape bornée à 10 min), lance les apps RH et Finance (Vite), exécute les 33 scénarios **Playwright** de l'assistant IA (backend simulé par `page.route`). Traces en artefact si échec. | scénario KO |
 | `secret-scan` | **Gitleaks** sur l'arborescence du dépôt (règles par défaut + `.gitleaks.toml`). | secret détecté |
 | `docker` | Build des 4 images avec cache GitHub Actions (`type=gha`), `docker compose up --wait` de la pile complète, **smoke tests** (voir ci-dessous), logs du backend, puis scan **Grype** des 4 images (résumé dans la page du run, rapport complet en artefact). | image non constructible, conteneur non sain, smoke test KO |
 | `publish` | **Uniquement sur `master`** et si les 5 jobs précédents sont verts : login `ghcr.io` avec `GITHUB_TOKEN`, push des 4 images taguées `latest` et `sha-<commit>` (couches reprises du cache : l'image publiée est celle testée), suppression des anciennes versions (2 conservées). | — |
@@ -166,8 +166,10 @@ automatiquement par GitHub, avec des permissions minimales (`contents: read` par
 - **Scan de vulnérabilités** des images (Grype, vulnérabilités ayant un correctif) à chaque run.
   Le job est informatif (il n'échoue pas sur une CVE d'une image de base) ; le résumé
   Critiques/Élevées est affiché dans la page du run.
-- **Dependabot** ouvre chaque semaine des PR de mise à jour (Maven, npm groupé, images Docker,
-  actions GitHub) ; chacune passe par le pipeline complet.
+- **Dependabot** ouvre chaque semaine des PR de mise à jour (Maven, npm, images Docker,
+  actions GitHub), **regroupées** par écosystème ; chacune passe par le pipeline complet.
+  Les montées de version **majeures** (Spring Boot 4, Java 25, Node 26…) sont ignorées :
+  ce sont des migrations à planifier à la main.
 - **Conteneurs non-root** (backend `appuser`, nginx-unprivileged) et **aucun secret dans les images**.
 - **Moindre privilège** sur le `GITHUB_TOKEN` (voir ci-dessus).
 
