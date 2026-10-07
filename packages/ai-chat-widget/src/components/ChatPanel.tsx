@@ -76,7 +76,13 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
   useEffect(() => {
     if (open) {
       // Le focus part sur le composer : c'est la seule action attendue a l'ouverture.
-      const timer = window.setTimeout(() => composerRef.current?.focus(), 220);
+      // Sauf si l'utilisateur a deja agi dans le panneau pendant le delai (ex. champ
+      // de renommage de l'historique) : lui voler le focus validerait ce champ au blur.
+      const timer = window.setTimeout(() => {
+        const active = document.activeElement;
+        if (active && active !== document.body && panelRef.current?.contains(active)) return;
+        composerRef.current?.focus();
+      }, 220);
       return () => window.clearTimeout(timer);
     }
     return undefined;
