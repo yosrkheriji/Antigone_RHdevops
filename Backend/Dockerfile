@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ---------- Etape 1 : compilation Maven (JDK 17) ----------
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-26 AS build
 WORKDIR /app
 # pom.xml seul d'abord : la couche des dependances reste en cache tant que le pom ne change pas.
 COPY pom.xml ./
