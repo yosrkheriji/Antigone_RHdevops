@@ -177,10 +177,11 @@ automatiquement par GitHub, avec des permissions minimales (`contents: read` par
 
 Après un merge sur `master`, les images sont dans l'onglet **Packages** du profil GitHub :
 `ghcr.io/yosrkheriji/antigone/backend`, `.../frontend-rh`, `.../frontend-finance`,
-`.../frontend-projects`. Le dépôt étant privé, les packages le sont aussi.
+`.../frontend-projects`. Les packages suivent la visibilité du dépôt : publics si le dépôt
+est public (`docker pull` sans authentification), privés sinon.
 
 ```bash
-# Jeton GitHub (classic) avec le scope read:packages
+# Uniquement si les packages sont privés : jeton GitHub (classic) avec le scope read:packages
 echo <TOKEN> | docker login ghcr.io -u yosrkheriji --password-stdin
 
 # dans .env :
@@ -214,4 +215,4 @@ Recommandé : *Settings → Branches → Add branch protection rule* sur `master
 | `docker` : le backend n'est pas `healthy` | Lire l'étape *Container status and logs* du job ; en local `docker compose logs backend`. |
 | Le frontend Docker n'atteint pas l'API | Ouvrir l'app via `localhost` (pas l'IP de la machine), ou rebuild avec `--build-arg VITE_API_URL=http://<hote>:8080` et ajouter l'origine à `FRONTEND_URL`. |
 | `publish` ne tourne pas | Normal hors `master`, ou si un job précédent a échoué. |
-| Quota de stockage Packages | Dépôt privé gratuit = 500 Mo ; seules 2 versions de chaque image sont gardées. |
+| Quota de stockage Packages | Packages privés : 500 Mo inclus sur un compte gratuit (gratuit et illimité pour les packages publics) ; seules 2 versions de chaque image sont gardées. |
