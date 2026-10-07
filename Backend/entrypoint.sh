@@ -25,4 +25,4 @@ if [ -n "$GOOGLE_DRIVE_VIEWER_KEY_B64" ]; then
 fi
 
 echo "🚀 Starting Antigone RH Backend..."
-exec java -jar app.jar
+exec java $JAVA_OPTS -jar app.jar

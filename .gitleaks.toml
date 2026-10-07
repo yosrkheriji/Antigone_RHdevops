@@ -1,0 +1,15 @@
+# Configuration Gitleaks du job "secret-scan" (.github/workflows/ci-cd.yml).
+# Regles par defaut de Gitleaks + exclusions de fichiers qui ne sont pas du code livre.
+title = "Antigone 360 secret scan"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fichiers generes, archives et valeurs de test non sensibles"
+paths = [
+  '''(^|/)node_modules/''',
+  '''(^|/)package-lock\.json$''',
+  '''(^|/)\.archive/''',
+  '''\.(pdf|png|jpe?g|webp|avif|gif|glb|exe|zip)$''',
+]

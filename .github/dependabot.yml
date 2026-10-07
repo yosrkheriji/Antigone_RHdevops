@@ -1,0 +1,28 @@
+# Mises a jour automatiques des dependances : chaque PR Dependabot passe
+# par le pipeline CI/CD complet avant d'etre fusionnee.
+version: 2
+updates:
+  - package-ecosystem: maven
+    directory: /Backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directories: [/Backend, /docker]
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

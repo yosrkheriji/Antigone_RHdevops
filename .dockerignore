@@ -1,0 +1,18 @@
+# Contexte de build des images frontend (racine du depot).
+# Liste blanche : seuls les manifests npm, le widget partage et les trois apps entrent.
+*
+!package.json
+!package-lock.json
+!packages/
+!frontend-rh/
+!frontend-finance/
+!frontend-projects/
+!docker/
+
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+**/test-results
+**/playwright-report
+**/.env
+**/.env.*

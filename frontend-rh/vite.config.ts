@@ -3,7 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? '/Antigone_RH/rh/' : '/',
+  // Chemin de publication (ex. /app/rh/) ; '/' en local, en CI et dans l'image Docker.
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [react(), tailwindcss()],
   server: {
     port: 3001,
