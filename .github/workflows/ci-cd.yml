@@ -136,8 +136,19 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      # Navigateur mis en cache entre les runs (cle = lockfile, donc version de Playwright).
+      - name: Cache Playwright browser
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Sans --with-deps : les bibliotheques systeme de Chromium sont deja presentes
+      # sur les runners Ubuntu de GitHub (Chrome y est preinstalle), ce qui evite un
+      # apt-get dependant de la disponibilite des miroirs Ubuntu.
       - name: Install Chromium for Playwright
-        run: npx playwright install --with-deps chromium
+        timeout-minutes: 10
+        run: npx playwright install chromium
 
       - name: Run end-to-end tests
         run: npm run test:e2e
